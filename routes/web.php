@@ -18,3 +18,9 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('login');
 });
+
+Route::post('/login', 'UserController@login');
+Route::get('/register', 'UserController@register');
+Route::post('/register', 'UserController@register');
+
+Route::get('/home', 'HomeController@index')->name('home');
