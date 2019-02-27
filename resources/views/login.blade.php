@@ -48,12 +48,16 @@
             <!-- end brand -->
             <!-- begin login-content -->
             <div class="login-content">
-                <form action="index.html" method="GET" class="margin-bottom-0">
-                    <div class="form-group m-b-20">
-                        <input type="text" class="form-control form-control-lg" placeholder="Email Address" required />
+                <form action="{{ action('UserController@login') }}" method="POST" class="margin-bottom-0" data-parsley-validate="true">
+                    {{ csrf_field() }}
+                    <div class="form-group">
+                        <div class="isa_error" id="loginErrorDiv" style="display:none"></div>
                     </div>
                     <div class="form-group m-b-20">
-                        <input type="password" class="form-control form-control-lg" placeholder="Password" required />
+                        <input type="text" class="form-control form-control-lg" placeholder="Email Address" name="email" data-parsley-type="email"  data-parsley-required="true" />
+                    </div>
+                    <div class="form-group m-b-20">
+                        <input type="password" class="form-control form-control-lg" placeholder="Password" name="password" data-parsley-required="true" />
                     </div>
                     <div class="checkbox checkbox-css m-b-20">
                         <input type="checkbox" id="remember_checkbox" /> 
@@ -88,6 +92,7 @@
 	<script src="/assets/plugins/js-cookie/js.cookie.js"></script>
 	<script src="/assets/js/theme/default.min.js"></script>
 	<script src="/assets/js/apps.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.8.1/parsley.js"></script>
 	<!-- ================== END BASE JS ================== -->
 	
 	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
