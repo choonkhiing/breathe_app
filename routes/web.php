@@ -23,4 +23,8 @@ Route::post('/login', 'UserController@login');
 Route::get('/register', 'UserController@register');
 Route::post('/register', 'UserController@register');
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/dashboard', 'UserController@dashboard');
+
+
+Route::resource('tasks', 'TaskController');
+Route::resource('collections', 'CollectionController');
