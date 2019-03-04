@@ -115,3 +115,88 @@ body{
 	width: 100%;
 	    min-height: calc(100% - (1.75rem * 2));
 }*/
+
+/*Login page*/
+.login.login-with-news-feed .login-header .brand {
+    color: white;
+}
+
+.right-content {
+	background: #0c1218;
+    height: 100%;
+}
+
+.login.login-with-news-feed, .register.register-with-news-feed {
+	height: 100%;
+}
+
+button.logout_btn {
+    border: 0;
+    background: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 15px 25px;
+}
+
+.fb-button {
+  background: #3B5998;
+  color: white;
+  padding: 10px;
+  font-weight: 700;
+}
+
+.fb-button:hover {
+  background: #234998;
+  color: white;
+}
+
+.fb-button i {
+  float: left;
+  font-size: 20px;
+}
+
+.google-button {
+  display: block;
+  padding: 10px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-transition: background-color .218s,border-color .218s,box-shadow .218s;
+  transition: background-color .218s,border-color .218s,box-shadow .218s;
+  cursor: pointer;
+  border: 1px solid #d6d9dc;
+  color: #757575;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,.25);
+  font-weight: 600;
+  margin-top: 10px !important;
+  background: white;
+}
+
+.google-button:hover {
+  -webkit-box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+  box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+}
+
+.googleIcon {
+  position: absolute;
+}
+
+.hr-text {
+    padding: 0;
+    border: none;
+    color: #383a4f;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 300;
+    margin: 25px 0px !important;
+}
+
+.hr-text:after {
+    content: attr(data-content);
+    display: inline-block;
+    position: relative;
+    top: -0.8em;
+    padding: 0 1em;
+    background: #0c1218;
+    color: white;
+}

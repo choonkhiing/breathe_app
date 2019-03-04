@@ -13,14 +13,20 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
+	public function index() {
+		return view('login');
+	}
+
 	public function login(Request $request) {
 		if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-   		 // The user is active, not suspended, and exists.
-			return redirect::action('HomeController@index');
+   		 	// The user is active, not suspended, and exists.
+
+			return redirect('/dashboard');
 		}
 		else
 		{
-			return redirect::back();
+			return redirect::back()->with("error", "Username or Password Incorrect!");
 		}
 	}
 
@@ -29,4 +35,8 @@ class UserController extends Controller
 		return view("user/dashboard");
 	}
 
+	public function logout() {
+		Auth::logout();
+		return redirect::route("login");
+	}
 }

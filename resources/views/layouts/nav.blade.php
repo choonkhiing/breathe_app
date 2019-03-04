@@ -43,9 +43,7 @@
 			<!-- end navbar-header -->
 			<ul class="navbar-nav navbar-right">
 				<li>
-					<a href="javascript:;" class="logout">
-						Log Out
-					</a>
+					<form method="POST" action="{{ action('UserController@logout') }}" class="logout">{{ csrf_field() }}<button class="logout_btn" type="submit" class="logout">Log Out</button></form>
 				</li>
 			</ul>
 		</div>

@@ -11,20 +11,14 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/login', function () {
-    return view('login');
-});
-
+Route::get('/', [ 'as' => 'login', 'uses' => 'UserController@index']);
 Route::post('/login', 'UserController@login');
+Route::post('/logout', 'UserController@logout');
 Route::get('/register', 'UserController@register');
 Route::post('/register', 'UserController@register');
 
-Route::get('/dashboard', 'UserController@dashboard');
-
-
-Route::resource('tasks', 'TaskController');
-Route::resource('collections', 'CollectionController');
+Route::middleware(['auth'])->group(function () {
+	Route::get('/dashboard', 'UserController@dashboard');
+	Route::resource('tasks', 'TaskController');
+	Route::resource('collections', 'CollectionController');
+});
