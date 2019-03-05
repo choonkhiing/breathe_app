@@ -42,12 +42,17 @@
 			</div>
 			<!-- end navbar-header -->
 			<ul class="navbar-nav navbar-right">
-				<li>
-					<form method="POST" action="{{ action('UserController@logout') }}" class="logout">{{ csrf_field() }}<button class="logout_btn" type="submit" class="logout">Log Out</button></form>
+				<li class="dropdown navbar-user">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+						<img src="/img/user-12.jpg" alt="" /> 
+						<span class="d-none d-md-inline">{{ Auth::user()->name }}</span> <b class="caret"></b>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right">
+						<form method="POST" action="{{ action('UserController@logout') }}" class="logout">{{ csrf_field() }}<button class="logout_btn" type="submit" class="logout">Log Out</button></form>
+					</div>
 				</li>
 			</ul>
-		</div>
-		<!-- end #header -->
+		</div>	
 		
 		<!-- begin #sidebar -->
 		<div id="sidebar" class="sidebar">
@@ -208,7 +213,8 @@
 	<!-- end page container -->
 
 	<!-- ================== BEGIN BASE JS ================== -->
-	<script src="/js/jquery-3.2.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+	<script src="/js/jquery-3.3.1.min.js"></script>
 	<script src="/js/jquery-ui.min.js"></script>
 	<script src="/js/bootstrap.min.js"></script>
 	<script src="/js/jquery.slimscroll.min.js"></script>
