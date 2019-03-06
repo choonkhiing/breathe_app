@@ -35,6 +35,11 @@ class UserController extends Controller
 		return view("user/dashboard");
 	}
 
+	public function register()
+	{
+		return view("register");
+	}
+
 	public function logout() {
 		Auth::logout();
 		return redirect::route("login");
