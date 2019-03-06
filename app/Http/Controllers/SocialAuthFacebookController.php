@@ -62,10 +62,10 @@ class SocialAuthFacebookController extends Controller
                 $new_user->status = 1;
 
                 $fileContents = file_get_contents($user->getAvatar());
-                File::put(public_path() . '/uploads/profile/' . $user->getId() . ".jpg", $fileContents);
+                File::put(public_path() . '/img/uploads/profile/' . $user->getId() . ".jpg", $fileContents);
 
                 //To show picture 
-                $new_user->profile_pic = public_path('uploads/profile/' . $user->getId() . ".jpg");
+                $new_user->profile_pic = ('img/uploads/profile/' . $user->getId() . ".jpg");
 
                 $new_user->save();
 
