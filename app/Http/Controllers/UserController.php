@@ -57,7 +57,7 @@ class UserController extends Controller
 				$user->password = bcrypt($request->password);
 				$user->phone = $request->phone;
 				$user->save();
-				return redirect:action("UserController@index");
+				return redirect::action("UserController@index");
 			}
 		}
 		catch (\Exception $e) {
