@@ -18,7 +18,6 @@
 	<link href="/assets/plugins/animate/animate.min.css" rel="stylesheet" />
 	<link href="/assets/css/default/style.min.css" rel="stylesheet" />
 	<link href="/assets/css/default/style-responsive.min.css" rel="stylesheet" />
-	<link href="/assets/css/default/theme/default.css" rel="stylesheet" id="theme" />
 	<link href="/css/custom.css" rel="stylesheet" />
 	<!-- ================== END BASE CSS STYLE ================== -->
 	
@@ -111,6 +110,8 @@
 	<script src="/assets/js/theme/default.min.js"></script>
 	<script src="/assets/js/apps.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.8.1/parsley.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+	
 	<!-- ================== END BASE JS ================== -->
 	
 	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
@@ -120,7 +121,14 @@
 	<script>
 		$(document).ready(function() {
 			App.init();
-			LoginV3.init();
+
+			@if(Session::has('success'))
+			swal("{{ Session::get('success-title') }}", "{{ Session::get('success') }}", "success");
+			@endif
+
+			@if(Session::has('error'))
+			swal("{{ Session::get('error-title') }}", "{{ Session::get('error') }}", "error");
+			@endif
 		});
 	</script>
 </body>

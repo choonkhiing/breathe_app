@@ -15,7 +15,13 @@ class UserController extends Controller
 {
 
 	public function index() {
-		return view('login');
+		if (Auth::check()) {
+    		// The user is logged in...
+    		return redirect('/dashboard');
+		}
+		else {
+			return view('login');
+		}
 	}
 
 	public function login(Request $request) {

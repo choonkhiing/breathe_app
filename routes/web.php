@@ -17,6 +17,10 @@ Route::post('/logout', 'UserController@logout');
 Route::get('/register', 'UserController@register');
 Route::post('/register', 'UserController@register');
 
+//Facebook Login
+Route::get('/fb/redirect', 'SocialAuthFacebookController@redirect');
+Route::get('/fb/callback', 'SocialAuthFacebookController@callback');
+
 Route::middleware(['auth'])->group(function () {
 	Route::get('/dashboard', 'UserController@dashboard');
 	Route::resource('tasks', 'TaskController');

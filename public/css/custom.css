@@ -130,13 +130,17 @@ body{
 	height: 100%;
 }
 
+.login.login-with-news-feed .login-content, .register.register-with-news-feed .register-content {
+    background: #0c1218;
+}
+
 button.logout_btn {
     border: 0;
     background: none;
     -webkit-appearance: none;
     cursor: pointer;
-    font-size: 14px;
-    margin: 15px 25px;
+    font-size: 12px;
+    width: 100%;
 }
 
 .fb-button {
