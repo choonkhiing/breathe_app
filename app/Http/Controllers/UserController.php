@@ -17,7 +17,7 @@ class UserController extends Controller
 	public function index() {
 		if (Auth::check()) {
     		// The user is logged in...
-    		return redirect('/dashboard');
+			return redirect('/dashboard');
 		}
 		else {
 			return view('login');
@@ -41,7 +41,32 @@ class UserController extends Controller
 		return view("user/dashboard");
 	}
 
-	public function register()
+	public function register(Request $request)
+	{
+		try
+		{
+			$checkEmail = User::where("email", $request->email)->count();
+			if ($checkEmail > 0){
+				Sessiom::flash("error", "Your email is already taken.");
+				return redirect::back();
+			}
+			else {
+				$user = new User();
+				$user->name = $request->username;
+				$user->email = $request->email;
+				$user->password = bcrypt($request->password);
+				$user->phone = $request->phone;
+				$user->save();
+				return redirect:action("UserController@index");
+			}
+		}
+		catch (\Exception $e) {
+			Sessiom::flash("error", $e->getMessage());
+			return redirect::back();
+		}
+	}
+
+	public function showregister()
 	{
 		return view("register");
 	}

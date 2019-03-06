@@ -60,7 +60,7 @@
 				<!-- end login-header -->
 				<!-- begin login-content -->
 				<div class="login-content">
-					<form action="{{ action('UserController@login') }}" method="POST" class="margin-bottom-0" data-parsley-validate="true">
+					<form action="{{ action('UserController@register') }}" method="POST" class="margin-bottom-0" data-parsley-validate="true">
 						{{ csrf_field() }}
 						<div class="form-group">
 							@if (session('error'))

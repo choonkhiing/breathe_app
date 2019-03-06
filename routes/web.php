@@ -14,7 +14,7 @@
 Route::get('/', [ 'as' => 'login', 'uses' => 'UserController@index']);
 Route::post('/login', 'UserController@login');
 Route::post('/logout', 'UserController@logout');
-Route::get('/register', 'UserController@register');
+Route::get('/register', 'UserController@showregister');
 Route::post('/register', 'UserController@register');
 
 //Facebook Login
