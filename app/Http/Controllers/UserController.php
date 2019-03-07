@@ -45,19 +45,30 @@ class UserController extends Controller
 	{
 		try
 		{
-			$checkEmail = User::where("email", $request->email)->count();
-			if ($checkEmail > 0){
-				Sessiom::flash("error", "Your email is already taken.");
+			$checkUsername = User::where("name", $request->name)->count();
+			if ($checkUsername > 0)
+			{
+				Sessiom::flash("error", "Your username is already taken.");
 				return redirect::back();
 			}
-			else {
-				$user = new User();
-				$user->name = $request->username;
-				$user->email = $request->email;
-				$user->password = bcrypt($request->password);
-				$user->phone = $request->phone;
-				$user->save();
-				return redirect::action("UserController@index");
+			else
+			{
+				$checkEmail = User::where("email", $request->email)->count();
+				if ($checkEmail > 0)
+				{
+					Sessiom::flash("error", "Your email is already taken.");
+					return redirect::back();
+				}
+				else 
+				{
+					$user = new User();
+					$user->name = $request->name;
+					$user->email = $request->email;
+					$user->password = bcrypt($request->password);
+					$user->phone = $request->phone;
+					$user->save();
+					return redirect::action("UserController@index");
+				}
 			}
 		}
 		catch (\Exception $e) {

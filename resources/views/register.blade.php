@@ -68,7 +68,7 @@
 							@endif
 						</div>
 						<div class="form-group m-b-20">
-							<input type="text" class="form-control form-control-lg" placeholder="Username" name="username" data-parsley-required="true" />
+							<input type="text" class="form-control form-control-lg" placeholder="Username" name="name" data-parsley-required="true" />
 						</div>
 						<div class="form-group m-b-20">
 							<input type="text" class="form-control form-control-lg" placeholder="Email Address" name="email" data-parsley-type="email"  data-parsley-required="true" />

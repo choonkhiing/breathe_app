@@ -80,7 +80,7 @@
 							<button type="submit" class="btn btn-success btn-block btn-lg">Sign me in</button>
 						</div>
 						<div class="m-t-20">
-							Not a member yet? Click <a href="javascript:;">here</a> to register.
+							Not a member yet? Click <a href="/register">here</a> to register.
 						</div>
 						<hr class="hr-text mb-1" data-content="OR">
 						<a href="/fb/redirect" class="btn btn-block fb-button mb-1"><i class="fab fa-facebook"></i> Login with Facebook</a>
