@@ -68,12 +68,13 @@
 							@endif
 						</div>
 						<div class="form-group m-b-20">
-							<input type="text" class="form-control form-control-lg" placeholder="Username" name="username" data-parsley-required="true" />
+							<input type="text" class="form-control form-control-lg" placeholder="Username" name="name" data-parsley-required="true" />
 						</div>
 						<div class="form-group m-b-20">
 							<input type="text" class="form-control form-control-lg" placeholder="Email Address" name="email" data-parsley-type="email"  data-parsley-required="true" />
 						</div>
 						<div class="form-group m-b-20">
+<<<<<<< HEAD
 							<input type="text" class="form-control form-control-lg" placeholder="Phone" name="phone" data-parsley-minlength="10" data-parsley-minlength-message="Please enter a valid phone number." data-parsley-pattern="/^[\+]?[0-9]{2,4}[-]?[0-9]{7,10}$/" />
 						</div>
 						<div class="form-group m-b-20">
@@ -81,10 +82,19 @@
 						</div>
 						<div class="form-group m-b-20">
 							<input type="password" class="form-control form-control-lg" placeholder="Confirm Password" name="confirmpassword" data-parsley-equalto-message="Password is not matched with confirm password!" data-parsley-equalto="#password" data-parsley-required="true" data-parsley-minlength="6" />
+=======
+							<input id="password" type="password" class="form-control form-control-lg" placeholder="Password" name="password" data-parsley-required="true"/>
+						</div>
+						<div class="form-group m-b-20">
+							<input type="password" class="form-control form-control-lg" placeholder="Confirm Password" name="confirmpassword" data-parsley-required="true" data-parsley-equalto="#password"/>
+						</div>
+						<div class="form-group m-b-20">
+							<input type="text" class="form-control form-control-lg" placeholder="Phone" name="phone" data-parsley-minlength="10" data-parsley-minlength-message="Please enter a valid phone number." data-parsley-pattern="/^[\+]?[0-9]{2,4}[-]?[0-9]{7,10}$/" data-parsley-required="true"/>
+>>>>>>> 8d1e7a4e8b469810a85f98b8ce045ad2cb4f5f2e
 						</div>
 						<!-- username email phone password confirmpassword = javascript for conpass -->
 						<div class="login-buttons">
-							<button type="submit" class="btn btn-success btn-block btn-lg">Sign me in</button>
+							<button type="submit" class="btn btn-success btn-block btn-lg">Register</button>
 						</div>
 						<div class="m-t-20">
 							Click <a href="/">here</a> to Login.
