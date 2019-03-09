@@ -47,7 +47,7 @@ class UserController extends Controller
 		{
 			$checkEmail = User::where("email", $request->email)->count();
 			if ($checkEmail > 0){
-				Sessiom::flash("error", "Your email is already taken.");
+				Session::flash("error", "Your email is already taken.");
 				return redirect::back();
 			}
 			else {
@@ -57,11 +57,15 @@ class UserController extends Controller
 				$user->password = bcrypt($request->password);
 				$user->phone = $request->phone;
 				$user->save();
-				return redirect:action("UserController@index");
+
+				if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+   		 			// The user is active, not suspended, and exists.
+					return redirect('/dashboard');
+				}
 			}
 		}
 		catch (\Exception $e) {
-			Sessiom::flash("error", $e->getMessage());
+			Session::flash("error", $e->getMessage());
 			return redirect::back();
 		}
 	}

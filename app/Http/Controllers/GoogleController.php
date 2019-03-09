@@ -10,30 +10,25 @@ use File;
 use Auth;
 use \App\User;
 
-class SocialAuthFacebookController extends Controller
+class GoogleController extends Controller
 {
     public function redirect()
     {
-        return Socialite::driver('facebook')->redirect();
+        return Socialite::driver('google')->redirect();
     }
 
-    /**
-     * Return a callback method from facebook api.
-     *
-     * @return callback URL from facebook
-     */
     public function callback()
     {
          try
         {
-            $user = Socialite::driver("facebook")->stateless()->user();
+            $user = Socialite::driver("google")->stateless()->user();
   
             //if email is registered
             if(DB::table('users')->where('email', $user->email)->count())
             {
-                if(DB::table('users')->where('facebook_id', $user->id)->count())
+                if(DB::table('users')->where('google_id', $user->id)->count())
                 {
-                    $exists = User::where('email', $user->email)->where('facebook_id', $user->id)->first();
+                    $exists = User::where('email', $user->email)->where('google_id', $user->id)->first();
 
                     if(Auth::loginUsingId($exists->id))
                     {
@@ -41,14 +36,14 @@ class SocialAuthFacebookController extends Controller
                     }
                     else
                     {
-                        return redirect::back()->with("error", "Unable to login with Facebook.");
+                        return redirect::back()->with("error", "Unable to login with Google.");
                     }
                 }
                 else {
-                    //update facebook id
+                    //update google id
                     $existingUser = User::where('email', $user->email)->first();
 
-                    $existingUser->facebook_id = $user->id;
+                    $existingUser->google_id = $user->id;
                     $existingUser->save();
                 }
             }
@@ -59,7 +54,7 @@ class SocialAuthFacebookController extends Controller
                 $new_user->name = $user->name;
                 $new_user->password = '';
                 $new_user->phone = '-';
-                $new_user->facebook_id = $user->id;
+                $new_user->google_id = $user->id;
                 $new_user->status = 1;
 
                 $fileContents = file_get_contents($user->getAvatar());

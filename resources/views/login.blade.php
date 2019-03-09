@@ -62,7 +62,9 @@
 					<form action="{{ action('UserController@login') }}" method="POST" class="margin-bottom-0" data-parsley-validate="true">
 						{{ csrf_field() }}
 						<div class="form-group">
-							<div class="isa_error" id="loginErrorDiv" style="display:none"></div>
+							@if (session('error'))
+							<div class="alert alert-danger">{{Session::get('error')}}</div>
+							@endif
 						</div>
 						<div class="form-group m-b-20">
 							<input type="text" class="form-control form-control-lg" placeholder="Email Address" name="email" data-parsley-type="email"  data-parsley-required="true" />
@@ -80,7 +82,7 @@
 							<button type="submit" class="btn btn-success btn-block btn-lg">Sign me in</button>
 						</div>
 						<div class="m-t-20">
-							Not a member yet? Click <a href="javascript:;">here</a> to register.
+							Not a member yet? Click <a href="/register">here</a> to register.
 						</div>
 						<hr class="hr-text mb-1" data-content="OR">
 						<a href="/fb/redirect" class="btn btn-block fb-button mb-1"><i class="fab fa-facebook"></i> Login with Facebook</a>

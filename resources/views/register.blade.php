@@ -51,7 +51,7 @@
 				<!-- begin login-header -->
 				<div class="login-header">
 					<div class="brand">
-						<b>Breathe</b>
+						<b>Registration</b>
 					</div>
 					<div class="icon">
 						<i class="fa fa-sign-in"></i>
@@ -64,7 +64,7 @@
 						{{ csrf_field() }}
 						<div class="form-group">
 							@if (session('error'))
-							<div class="alert alert-danger" id="loginErrorDiv">{{Session:get('error')}}</div>
+							<div class="alert alert-danger" id="loginErrorDiv">{{Session::get('error')}}</div>
 							@endif
 						</div>
 						<div class="form-group m-b-20">
@@ -74,13 +74,13 @@
 							<input type="text" class="form-control form-control-lg" placeholder="Email Address" name="email" data-parsley-type="email"  data-parsley-required="true" />
 						</div>
 						<div class="form-group m-b-20">
-							<input type="password" class="form-control form-control-lg" placeholder="Password" name="password" data-parsley-required="true" />
-						</div>
-						<div class="form-group m-b-20">
-							<input type="password" class="form-control form-control-lg" placeholder="Confirm Password" name="confirmpassword" data-parsley-required="true" />
-						</div>
-						<div class="form-group m-b-20">
 							<input type="text" class="form-control form-control-lg" placeholder="Phone" name="phone" data-parsley-minlength="10" data-parsley-minlength-message="Please enter a valid phone number." data-parsley-pattern="/^[\+]?[0-9]{2,4}[-]?[0-9]{7,10}$/" />
+						</div>
+						<div class="form-group m-b-20">
+							<input type="password" id="password" class="form-control form-control-lg" placeholder="Password" name="password" data-parsley-required="true" data-parsley-minlength="6" />
+						</div>
+						<div class="form-group m-b-20">
+							<input type="password" class="form-control form-control-lg" placeholder="Confirm Password" name="confirmpassword" data-parsley-equalto-message="Password is not matched with confirm password!" data-parsley-equalto="#password" data-parsley-required="true" data-parsley-minlength="6" />
 						</div>
 						<!-- username email phone password confirmpassword = javascript for conpass -->
 						<div class="login-buttons">
