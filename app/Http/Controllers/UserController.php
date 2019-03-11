@@ -11,6 +11,8 @@ use Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 
+use \App\Task;
+
 class UserController extends Controller
 {
 
@@ -38,7 +40,13 @@ class UserController extends Controller
 
 	public function dashboard()
 	{
-		return view("user/dashboard");
+		$tasks = Task::orderBy("due_date", "ASC")
+        ->orderBy("priority", "ASC")
+        ->get();
+
+        $tasks = $tasks->groupBy("priority");
+
+		return view("user/dashboard", compact("tasks"));
 	}
 
 	public function profile()

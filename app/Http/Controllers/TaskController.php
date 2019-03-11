@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Redirect;
 use Auth;
+use Carbon\Carbon;
 
 use \App\Task;
 
@@ -20,6 +21,9 @@ class TaskController extends Controller
         $tasks = Task::orderBy("due_date", "ASC")
         ->orderBy("priority", "ASC")
         ->get();
+
+        $tasks = $tasks->groupBy("priority");
+
         return view("user.tasks.index", compact("tasks"));
     }
 
@@ -45,11 +49,11 @@ class TaskController extends Controller
         $task->title = $request->title;
         $task->description = $request->description;
         $task->priority = $request->priority;
-        $task->due_date = $request->duedate;
+        $task->due_date = Carbon::parse($request->duedate);
         $task->user_id = 1;
         $task->save();
 
-        return redirect::action("TaskController@index");
+        return redirect::back();
     }
 
     /**
