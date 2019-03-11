@@ -11,21 +11,14 @@
 		</div>
 		<div class="panel-body">
 			<div class="form-group">
-				<div class="profile-header-container">
-					<label class="title">Profile Picture</label>
-					<div class="d-flex">
-						<div class="profile-img" margin-top: 10px;>
-							<img class="rounded-circle" src="/img/{{ Auth::user()->profile_pic}}" width="60px" />
-						</div>
-						<div class="update-propic row justify-content" style="display:none; ">
-							<form action="/profile" method="post" enctype="multipart/form-data">
-								@csrf
-								<div class="form-group">
-									<input type="file" class="form-control-file" name="avatar" id="avatarFile" aria-describedby="fileHelp">
-									<small id="fileHelp" class="form-text text-muted">Please upload a valid image file. Size of image should not be more than 2MB.</small>
-								</div>
-							</form>
-						</div>
+				<label class="title">Profile Picture</label>
+				<div class="d-flex" style="align-items: center;">
+					<div class="profile-img m-r-10">
+						<img class="rounded-circle" id="profile_pic" src="{{ Auth::user()->profile_pic}}" width="60px" />
+					</div>
+					<div class="update-propic justify-content" style="display:none; ">
+							<input type="file" class="form-control-file" name="avatar" id="avatarFile" aria-describedby="fileHelp">
+							<small id="fileHelp" class="form-text text-muted">Please upload a valid image file. Size of image should not be more than 2MB.</small>
 					</div>
 				</div>
 			</div>
@@ -77,7 +70,19 @@
 		$('.update_profile_btn').click(function() {
 			$('#profile_form').submit();
 		});
+
+		$(":file").change(function () {
+			if (this.files && this.files[0]) {
+				var reader = new FileReader();
+				reader.onload = imageIsLoaded;
+				reader.readAsDataURL(this.files[0]);
+			}
+		});
 	});
+
+	function imageIsLoaded(e) {
+		$('#profile_pic').attr('src', e.target.result);
+	};
 </script>
 
 @endsection

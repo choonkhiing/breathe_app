@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone');
-            $table->string('profile_pic')->default('user.jpg');
+            $table->string('profile_pic')->default('img/uploads/profile/user.jpg');
             $table->integer('type')->default(0);
             $table->integer('status')->default(1);
             $table->string('facebook_id')->nullable();
