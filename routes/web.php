@@ -14,12 +14,16 @@
 Route::get('/', [ 'as' => 'login', 'uses' => 'UserController@index']);
 Route::post('/login', 'UserController@login');
 Route::post('/logout', 'UserController@logout');
-Route::get('/register', 'UserController@register');
+Route::get('/register', 'UserController@showregister');
 Route::post('/register', 'UserController@register');
 
 //Facebook Login
 Route::get('/fb/redirect', 'SocialAuthFacebookController@redirect');
 Route::get('/fb/callback', 'SocialAuthFacebookController@callback');
+
+//Google Login
+Route::get('/google/redirect', 'GoogleController@redirect');
+Route::get('/google/callback', 'GoogleController@callback');
 
 Route::middleware(['auth'])->group(function () {
 	Route::get('/dashboard', 'UserController@dashboard');
