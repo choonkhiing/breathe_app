@@ -19,6 +19,9 @@
 	<link href="/css/animate.css" rel="stylesheet" />
 	<link href="/css/custom.css" rel="stylesheet">
 
+	<link href="/css/bootstrap-datepicker.min.css" rel="stylesheet">
+	<link href="/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+
 	<!-- ================== END BASE CSS STYLE ================== -->
 	
 	<!-- ================== BEGIN BASE JS ================== -->
@@ -149,7 +152,7 @@
 		<div class="modal" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content pop-up">
-					<form id="formTask" action="{{ action('TaskController@store') }}" method="POST" class="pop-up-box" data-parsley-validate>
+					<form id="formTask" autocomplete="off" action="{{ action('TaskController@store') }}" method="POST" class="pop-up-box" data-parsley-validate>
 						@csrf
 						<div class="panel mb-0">
 							<div class="panel-heading">
@@ -178,7 +181,7 @@
 									<div class="col-md-6">
 										<div class="form-group">
 											<label class="title">Due Date</label>
-											<input name="duedate" type="date" class="form-control form-control-lg">
+											<input name="duedate" type="datepicker" placeholder="Select Due Date" class="form-control form-control-lg">
 										</div>
 									</div>
 								</div>
@@ -213,6 +216,7 @@
 	<script src="/js/jquery-3.2.1.min.js"></script>
 	<script src="/js/jquery-ui.min.js"></script>
 	<script src="/js/bootstrap.min.js"></script>
+	<script src="/js/bootstrap-datepicker.min.js"></script>
 	<script src="/js/jquery.slimscroll.min.js"></script>
 	<script src="/js/js.cookie.js"></script>
 	<script src="/js/parsley.js"></script>
@@ -243,6 +247,13 @@
 
 			$(".pop-up-box").click(function(e){
 				e.stopPropagation();
+			});
+
+			$("input[type='datepicker']").datepicker({
+				format: "dd/mm/yyyy",
+				autoclose: true,
+				todayHighlight: true,
+				startDate: new Date()
 			});
 
 		});
