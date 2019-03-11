@@ -51,7 +51,10 @@
 						<span class="d-none d-md-inline">{{ Auth::user()->name }}</span> <b class="caret"></b>
 					</a>
 					<div class="dropdown-menu dropdown-menu-right">
+						<a href="/profile" class="dropdown-item">Profile</a>
+						<div class="dropdown-divider"></div>
 						<form method="POST" action="{{ action('UserController@logout') }}" class="logout">{{ csrf_field() }}<button class="logout_btn" type="submit" class="logout">Log Out</button></form>
+
 					</div>
 				</li>
 			</ul>
@@ -224,6 +227,8 @@
 	<script src="/js/jquery.slimscroll.min.js"></script>
 	<script src="/js/js.cookie.js"></script>
 	<script src="/js/parsley.js"></script>
+	
+	
 	<!--[if lt IE 9]>
 		<script src="../assets/crossbrowserjs/html5shiv.js"></script>
 		<script src="../assets/crossbrowserjs/respond.min.js"></script>
