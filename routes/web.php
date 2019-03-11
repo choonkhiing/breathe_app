@@ -23,6 +23,8 @@ Route::get('/fb/callback', 'SocialAuthFacebookController@callback');
 
 Route::middleware(['auth'])->group(function () {
 	Route::get('/dashboard', 'UserController@dashboard');
+	Route::get('/profile', 'UserController@profile');
+	//Route::post('/profile/edit', 'UserController@profileEdit');
 	Route::resource('tasks', 'TaskController');
 	Route::resource('collections', 'CollectionController');
 });

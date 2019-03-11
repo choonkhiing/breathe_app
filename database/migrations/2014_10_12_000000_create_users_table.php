@@ -19,13 +19,14 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone');
-            $table->string('profile_pic')->nullable();
+            $table->string('profile_pic')->default('user.jpg');
             $table->integer('type')->default(0);
             $table->integer('status')->default(1);
             $table->string('facebook_id')->nullable();
             $table->string('google_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
+
         });
     }
 
@@ -38,4 +39,6 @@ class CreateUsersTable extends Migration
     {
         Schema::dropIfExists('users');
     }
+
+
 }

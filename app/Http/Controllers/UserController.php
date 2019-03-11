@@ -41,6 +41,29 @@ class UserController extends Controller
 		return view("user/dashboard");
 	}
 
+	public function profile()
+	{	
+		//dd(Auth::user());
+		$user=User::find(Auth::user()->id);
+		//User::where("phone", '23123')->where('name', '>=', 'suping')->orderBy('price', DESC)->first();
+
+		
+		// if (empty($users)) {
+
+		// }
+		// else {
+		// 	for ($users as $user) {
+
+		// 	}
+		// }
+		
+		//dd($user);
+		return view("user/profile",compact("user"));
+	}
+
+
+
+
 	public function logout() {
 		Auth::logout();
 		return redirect::route("login");
