@@ -123,6 +123,14 @@
 		
 		<!-- begin #content -->
 		<div id="content" class="content">
+
+			@if(Session::has('message'))
+			<div class="alert alert-{{ Session::get('type') }} fade show">
+				<span class="close" data-dismiss="alert">×</span>
+				{{ Session::get('message') }}
+			</div>
+			@endif
+
 			<!-- begin breadcrumb -->
 			<ol class="breadcrumb pull-right">
 				<li class="breadcrumb-item"><a href="javascript:;">Home</a></li>
@@ -190,17 +198,17 @@
 
 			$("#sidebar [href*='" + pathname + "']").closest("li").addClass("active");
 
-			$(".pop-up").click(function(){
-				$(this).fadeOut();
-			});
+			// $(".pop-up").click(function(){
+			// 	$(this).fadeOut();
+			// });
 
-			$("#btm-action").click(function(){
-				$(".pop-up").fadeIn();
-			});
+			// $("#btm-action").click(function(){
+			// 	$(".pop-up").fadeIn();
+			// });
 
-			$(".pop-up-box").click(function(e){
-				e.stopPropagation();
-			});
+			// $(".pop-up-box").click(function(e){
+			// 	e.stopPropagation();
+			// });
 
 			
 
