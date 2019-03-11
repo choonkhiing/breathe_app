@@ -40,4 +40,16 @@ return [
         ],
     ],
 
+    'facebook' => [
+        'client_id' => env("FB_ID"),
+        'client_secret' => env("FB_SECRET"),
+        'redirect' => 'http://localhost:8000/fb/callback',
+    ],
+
+    'google' => [
+        'client_id'     => env("GOOGLE_ID"),
+        'client_secret' => env("GOOGLE_SECRET"),
+        'redirect'      => 'http://localhost:8000/google/callback',
+    ],
+
 ];
