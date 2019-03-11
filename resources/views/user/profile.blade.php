@@ -13,22 +13,18 @@
 			<div class="form-group">
 				<div class="profile-header-container">
 					<label class="title">Profile Picture</label>
-					<div class="row">
-						<div class="col-md-1">
-							<div class="profile-img" margin-top: 10px;>
-								<img class="rounded-circle" src="/img/{{ $user->profile_pic}}" width="60px" />
-							</div>
+					<div class="d-flex">
+						<div class="profile-img" margin-top: 10px;>
+							<img class="rounded-circle" src="/img/{{ $user->profile_pic}}" width="60px" />
 						</div>
-						<div class="col-md-11">
-							<div class="update-propic row justify-content" style="display:none; ">
-								<form action="/profile" method="post" enctype="multipart/form-data">
-									@csrf
-									<div class="form-group">
-										<input type="file" class="form-control-file" name="avatar" id="avatarFile" aria-describedby="fileHelp">
-										<small id="fileHelp" class="form-text text-muted">Please upload a valid image file. Size of image should not be more than 2MB.</small>
-									</div>
-								</form>
-							</div>
+						<div class="update-propic row justify-content" style="display:none; ">
+							<form action="/profile" method="post" enctype="multipart/form-data">
+								@csrf
+								<div class="form-group">
+									<input type="file" class="form-control-file" name="avatar" id="avatarFile" aria-describedby="fileHelp">
+									<small id="fileHelp" class="form-text text-muted">Please upload a valid image file. Size of image should not be more than 2MB.</small>
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>
