@@ -39,11 +39,11 @@
 			
 			<div class="form-group">
 				<label class="title">Phone</label>
-				<input data-parsley-required="true" name="phone" type="text"readonly class="profile-details form-control-plaintext form-control-lg" placeholder="Enter Phone Number" value="{{$user->phone}}" data-parsley-minlength="10" data-parsley-minlength-message="Please enter a valid phone number." data-parsley-pattern="/^[\+]?[0-9]{2,4}[-]?[0-9]{7,10}$/">
+				<input data-parsley-required="true" name="phone" type="text"readonly class="profile-details form-control-plaintext form-control-lg" placeholder="Enter Phone Number" value="{{ Auth::user()->phone }}" data-parsley-minlength="10" data-parsley-minlength-message="Please enter a valid phone number." data-parsley-pattern="/^[\+]?[0-9]{2,4}[-]?[0-9]{7,10}$/">
 			</div>
 		</div>
 		<div class="panel-footer clearfix">
-			<input type="hidden" name="user_id" value="{{$user->id}}"/>
+			<input type="hidden" name="user_id" value="{{ Auth::user()->id }}"/>
 			<button type="button" class="edit_profile_btn btn btn-primary btn-action pull-right">Edit Profile</button>
 			<button type="button" class="cancel_profile_btn btn btn-primary btn-action pull-right" style="display: none;">Cancel Profile</button>
 			<button type="button" class="update_profile_btn btn btn-primary btn-action pull-right" style="display: none; margin-right: 5px">Update Profile</button>

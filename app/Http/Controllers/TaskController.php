@@ -45,14 +45,22 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        $task = new Task();
-        $task->title = $request->title;
-        $task->description = $request->description;
-        $task->priority = $request->priority;
-        $task->due_date = Carbon::parse($request->duedate);
-        $task->user_id = 1;
-        $task->save();
+        try {
+            $task = new Task();
+            $task->title = $request->title;
+            $task->description = $request->description;
+            $task->priority = $request->priority;
 
+            //Parse date accepted from front-end to MySQL acceptable date format
+            $task->due_date = ($request->duedate) ? Carbon::createFromFormat('d/m/Y', $request->duedate) : null; 
+            
+            $task->user_id = Auth::user()->id;
+            $task->save();
+
+            $this::successMessage("New task added!");
+        } catch (\Exception $e) {
+            $this::errorMessage($e->getMessage());
+        }
         return redirect::back();
     }
 
@@ -64,7 +72,12 @@ class TaskController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $task = Task::find($id);
+            return response()->json(['data' => $task]);
+        } catch (\Exception $e) {
+
+        }
     }
 
     /**

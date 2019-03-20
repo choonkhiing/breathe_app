@@ -8,7 +8,7 @@
 	@if(!empty($tasks[$key]))
 	<div class="col-md-4">
 		@foreach($tasks[$key] AS $task)
-		<div class="panel">
+		<div class="panel task-panel" data-task-id="{{ $task->id }}">
 			<div class="panel-body">
 				#{{ $loop->iteration }}
 				<strong class="f-s-13">{{ $task->title }}</strong>
@@ -86,6 +86,22 @@
 	</div>
 </div>
 
+<div class="modal" id="taskDetail" tabindex="-1" role="dialog" aria-labelledby="taskDetailTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content pop-up">
+			<div class="panel-heading d-flex" style="justify-content: space-between;">
+				<h4 class="panel-title" id="task_title"></h4>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="panel-body">
+				<div id="task_desc"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <div id="btm-action" class="btm-nav" data-toggle="modal" data-target="#exampleModalCenter">
 	<div class="btm-item">
 		<i class="fa fa-2x fa-plus d-block"></i>
@@ -101,6 +117,17 @@
 			autoclose: true,
 			todayHighlight: true,
 			startDate: new Date()
+		});
+
+		$(".task-panel").click(function(){
+			var url = "/tasks/" + $(this).attr("data-task-id");
+			$.get(url, function(response){
+				console.log(response);
+				var data = response.data;
+				$("#task_title").text(data.title);
+				$("#task_desc").text(data.description);
+				$("#taskDetail").modal("show");
+			});
 		});
 	});
 </script>
