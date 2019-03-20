@@ -7,6 +7,8 @@ use \App\User;
 use Auth;
 use Session;
 use Carbon\Carbon;
+use File;
+use Storage;
 use Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -51,7 +53,8 @@ class UserController extends Controller
 
 	public function profile()
 	{	
-		return view("user/profile");
+		$user = User::find(Auth::user()->id);
+		return view("user/profile", compact("user"));
 	}
 
 	public function editProfile(Request $request)
@@ -60,39 +63,26 @@ class UserController extends Controller
 		{
 			$user = User::findOrFail($request->user_id);
 			$user->name = $request->name;
-
-			// if($user->email!=$request->email){
-			// 	$checkEmail=User::where("email", $request->email)->count();
-			// 	if($checkEmail>0){
-			// 		Session::flash("error", "Your email is already taken!");
-			// 		return redirect::back();
-			// 	}
-			// 	$user->email = $request->email;
-			// }
-
 			$user->phone = $request->phone;
-			dd($request->avatar, $request->file('avatar'));
+
 			$image = $request->file('avatar');
 
-            if ($image != null) {
-                $imageFile = fopen($image->path(), 'r');
-            }
-            else {
-                $imageFile = null;
-            }
-            dd($image);
-			if($imageFile != null) {
-                $avatar = $imageFile->avatar('file');
-                $extention = $avatar->extension();
+			if($image != null) {
+                $extension = $image->extension();
+               	if ($extension == "jpeg") {
+               		$extension = "jpg";
+               	}
+            
                 $date = Carbon::now()->format('YmdHis');
-                Storage::disk('public')->put('/img/uploads/profile/'.$date.'.'.$extention, File::get($avatar));
-                $user->profile_pic = '/img/uploads/profile/'.$date.'.'.$extention;
+                Storage::disk('public')->put($date.'.'.$extension, File::get($image));
+                $user->profile_pic = '/img/uploads/profile/'.$date.'.'.$extension;
             }
-
 
 			$user->save();
 			Auth::user()->name = $user->name;
 			Auth::user()->phone = $user->phone;
+			Auth::user()->profile_pic = $user->profile_pic;
+
 			Session::flash("success", "Profile details is updated!");
 			return redirect('/profile');
 		}

@@ -3,7 +3,7 @@
 @section("header", "Profile")
 
 @section('content')
-<form id="profile_form" action="/profile/edit" method="POST" class="pop-up-box" data-parsley-validate>
+<form id="profile_form" action="/profile/edit" method="POST" class="pop-up-box" data-parsley-validate enctype="multipart/form-data">
 	@csrf
 	<div class="form-group">
 		@if (session('error'))
