@@ -204,3 +204,10 @@ button.logout_btn {
     background: #0c1218;
     color: white;
 }
+
+/**profile**/
+.rounded-profile-pic {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+}

@@ -5,32 +5,38 @@
 @section('content')
 <form id="profile_form" action="/profile/edit" method="POST" class="pop-up-box" data-parsley-validate>
 	@csrf
+	<div class="form-group">
+		@if (session('error'))
+			<div class="alert alert-danger" id="loginErrorDiv">{{Session::get('error')}}</div>
+		@elseif(session('success'))
+			<div class="alert alert-success" id="loginErrorDiv">{{Session::get('success')}}</div>
+		@endif
+	</div>
 	<div class="panel mb-0">
-		<div class="panel-heading">
-			<h4 class="panel-title">Profile</h4>
+		<div class="panel-heading" style="padding-bottom: 35px;">
+			<h4 class="panel-title" style="float:left;">Profile</h4>
+			<p style="float:right;">{{$user->name}} ({{$user->email}})</p>
 		</div>
+		
 		<div class="panel-body">
 			<div class="form-group">
 				<label class="title">Profile Picture</label>
 				<div class="d-flex" style="align-items: center;">
 					<div class="profile-img m-r-10">
-						<img class="rounded-circle" id="profile_pic" src="{{ $user->profile_pic}}" width="60px" />
+						<img class="rounded-circle rounded-profile-pic" id="profile_pic" src="{{ $user->profile_pic}}" width="60px" />
 					</div>
 					<div class="update-propic justify-content" style="display:none; ">
-							<input type="file" class="form-control-file" name="avatar" id="avatarFile" aria-describedby="fileHelp">
-							<small id="fileHelp" class="form-text text-muted">Please upload a valid image file. Size of image should not be more than 2MB.</small>
+						<input type="file" name="avatar" id="avatar">
+						<small id="fileHelp" class="form-text text-muted">Please upload a valid image file.</small>
 					</div>
 				</div>
 			</div>
 			<br>
 			<div class="form-group">
-				<label class="title">Username</label>
-				<input data-parsley-required="true" name="username" type="text" readonly class="profile-details form-control-plaintext form-control-lg" placeholder="Enter Username" value="{{$user->name}}">
+				<label class="title">Name</label>
+				<input data-parsley-required="true" name="name" type="text" readonly class="profile-details form-control-plaintext form-control-lg" placeholder="Enter Username" value="{{$user->name}}" data-parsley-pattern="/^[a-zA-Z\s]*$/" data-pattern-message="Only alphabet letter(s) is allowed.">
 			</div>
-			<div class="form-group">
-				<label class="title">Email</label>
-				<input data-parsley-required="true" name="email" type="email" readonly class="profile-details form-control-plaintext form-control-lg" placeholder="Enter Email Address" value="{{$user->email}}">
-			</div>
+			
 			<div class="form-group">
 				<label class="title">Phone</label>
 				<input data-parsley-required="true" name="phone" type="text"readonly class="profile-details form-control-plaintext form-control-lg" placeholder="Enter Phone Number" value="{{$user->phone}}" data-parsley-minlength="10" data-parsley-minlength-message="Please enter a valid phone number." data-parsley-pattern="/^[\+]?[0-9]{2,4}[-]?[0-9]{7,10}$/">

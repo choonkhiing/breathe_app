@@ -69,6 +69,54 @@ class UserController extends Controller
 		return view("user/profile",compact("user"));
 	}
 
+	public function editProfile(Request $request)
+	{	
+		try
+		{
+			$user = User::findOrFail($request->user_id);
+			$user->name = $request->name;
+
+			// if($user->email!=$request->email){
+			// 	$checkEmail=User::where("email", $request->email)->count();
+			// 	if($checkEmail>0){
+			// 		Session::flash("error", "Your email is already taken!");
+			// 		return redirect::back();
+			// 	}
+			// 	$user->email = $request->email;
+			// }
+
+			$user->phone = $request->phone;
+			dd($request->avatar, $request->file('avatar'));
+			$image = $request->file('avatar');
+
+            if ($image != null) {
+                $imageFile = fopen($image->path(), 'r');
+            }
+            else {
+                $imageFile = null;
+            }
+            dd($image);
+			if($imageFile != null) {
+                $avatar = $imageFile->avatar('file');
+                $extention = $avatar->extension();
+                $date = Carbon::now()->format('YmdHis');
+                Storage::disk('public')->put('/img/uploads/profile/'.$date.'.'.$extention, File::get($avatar));
+                $user->profile_pic = '/img/uploads/profile/'.$date.'.'.$extention;
+            }
+
+
+			$user->save();
+			Auth::user()->name = $user->name;
+			Auth::user()->phone = $user->phone;
+			Session::flash("success", "Profile details is updated!");
+			return redirect('/profile');
+		}
+		catch (\Exception $e) {
+			Session::flash("error", $e->getMessage());
+			return redirect::back();
+		}
+	}
+
 	public function register(Request $request)
 	{
 		try
