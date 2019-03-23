@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Redirect;
+
+use \App\Collection;
 
 class CollectionController extends Controller
 {
@@ -34,7 +37,14 @@ class CollectionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $cl = new Collection();
+        $cl->title = $request->title;
+        $cl->description = $request->description;
+        $cl->user_id = \Auth::user()->id;
+        $cl->save();
+
+        $this::successMessage("New collection added!");
+        return redirect::back();
     }
 
     /**

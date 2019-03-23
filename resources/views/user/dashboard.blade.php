@@ -4,15 +4,15 @@
 
 @section("content")
 <div class="task-list row">
-	@foreach(\App\Task::task_priority AS $key => $priority)
+	@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
 	@if(!empty($tasks[$key]))
 	<div class="col-md-4">
 		@foreach($tasks[$key] AS $task)
 		<div class="panel task-panel" data-task-id="{{ $task->id }}">
 			<div class="panel-body">
 				#{{ $loop->iteration }}
-				<strong class="f-s-13">{{ $task->title }}</strong>
-				<span class="label {{ \App\Task::task_priority_class[$key] }} pull-right f-s-12">{{ $priority }}</span>
+				<strong class="f-s-13 task_title">{{ $task->title }}</strong>
+				<span class="label {{ \App\Task::TASK_PRIORITY_CLASS[$key] }} pull-right f-s-12">{{ $priority }}</span>
 			</div>
 			<div class="panel-footer">
 				<i class="fa fa-calendar m-r-5"></i>
@@ -57,18 +57,26 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
-									<label class="title">Priority</label>
-									<select name="priority" class="form-control form-control-lg">
-										<option value="3">Low</option>
-										<option value="2">Medium</option>
-										<option value="1">High</option>
-									</select>
+									<label class="title">Start Date (Optional)</label>
+									<input name="startdate" type="datepicker" placeholder="Select Start Date" class="form-control form-control-lg">
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="form-group">
 									<label class="title">Due Date</label>
 									<input name="duedate" type="datepicker" placeholder="Select Due Date" class="form-control form-control-lg">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="title">Priority</label>
+									<select name="priority" class="form-control form-control-lg">
+										<option value="3">Low</option>
+										<option value="2">Medium</option>
+										<option value="1">High</option>
+									</select>
 								</div>
 							</div>
 						</div>
@@ -89,15 +97,28 @@
 <div class="modal" id="taskDetail" tabindex="-1" role="dialog" aria-labelledby="taskDetailTitle" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content pop-up">
-			<div class="panel-heading d-flex" style="justify-content: space-between;">
-				<h4 class="panel-title" id="task_title"></h4>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="panel-body">
-				<div id="task_desc"></div>
-			</div>
+			<form id="form_taskedit">
+				@csrf
+				<div class="panel-heading d-flex p-t-5 p-b-5" style="justify-content: space-between;">
+					<h4 class="panel-title" style="flex: 2">
+						<input id="task_title" name="edit_title" class="form-control form-control-lg form-control-plaintext" readonly="">
+					</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="panel-body">
+					<div id="task_desc"></div>
+					<input hidden id="task_id">
+				</div>
+				<div class="panel-footer">
+					<div id="btngroup-edit" style="display: none">
+						<button id="btn_canceledit" type="button" class="btn btn-default btn-action">Cancel Edit</button>
+						<button id="btn_updatetask" type="button" class="btn btn-primary btn-action">Udpdate</button>
+					</div>
+					<button id="btn_edittask" type="button" class="btn btn-success btn-action">Edit</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
@@ -124,11 +145,47 @@
 			$.get(url, function(response){
 				console.log(response);
 				var data = response.data;
-				$("#task_title").text(data.title);
+				$("#task_id").val(data.id);
+				$("#task_title").prop("readonly", "").val(data.title);
 				$("#task_desc").text(data.description);
 				$("#taskDetail").modal("show");
 			});
 		});
+
+		$("#btn_edittask").click(function(){
+			$("#task_title").removeAttr("readonly")
+			.removeClass("form-control-plaintext")
+			.focus();
+
+			$("#btngroup-edit").show();
+			$(this).hide();
+		});
+
+		$("#btn_canceledit").click(function(){
+			$("#btngroup-edit").hide();
+			$("#btn_edittask").show();
+		});
+
+		$("#btn_updatetask").click(function(){
+			$.ajax({
+				url: "/tasks/" + $("#task_id").val(),
+				method: "PUT",
+				data: $("#form_taskedit").serialize(),
+				success: function(response){
+					console.log(response);
+					if(response.success){
+						var data = response.data;
+						updateTask(data);
+						$("#taskDetail").modal("toggle");
+					}
+				}
+			})
+		});
+
+		function updateTask(taskobj){
+			var task_modal = $("div[data-task-id='" + taskobj.id + "']");
+			task_modal.find(".task_title").text(taskobj.title);
+		}
 	});
 </script>
 @stop

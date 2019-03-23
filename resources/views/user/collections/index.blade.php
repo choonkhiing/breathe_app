@@ -3,7 +3,7 @@
 @section("header", "Collections")
 
 @section("content")
-<form action="{{ action('CollectionController@store') }}" method="POST">
+<form action="{{ action('CollectionController@store') }}" method="POST" autocomplete="off">
 	@csrf
 	<div class="row">
 		<div class="col-md-6 offset-md-3">
@@ -18,7 +18,7 @@
 					</div>
 					<div class="form-group">
 						<label class="title">Description (Optional)</label>
-						<textarea class="form-control form-control-lg" rows="10" placeholder="Enter Description"></textarea>
+						<textarea class="form-control form-control-lg" rows="10" name="description" placeholder="Enter Description"></textarea>
 					</div>
 				</div>
 				<div class="panel-footer clearfix">
