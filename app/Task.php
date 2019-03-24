@@ -18,4 +18,8 @@ class Task extends Model
     	"2" => "label-warning",
     	"1" => "label-danger"
     ];
+
+    public function getCollection(){
+        return $this->hasOne('App\Collection', 'id', 'collection_id');
+    }
 }

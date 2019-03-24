@@ -10,12 +10,22 @@
 		@foreach($tasks[$key] AS $task)
 		<div class="panel task-panel" data-task-id="{{ $task->id }}">
 			<div class="panel-body">
-				#{{ $loop->iteration }}
-				<strong class="f-s-13 task_title">{{ $task->title }}</strong>
+				<strong class="f-s-13 task_title pull-left">
+					#{{ $loop->iteration }} {{ $task->title }}
+				</strong>
 				<span class="label {{ \App\Task::TASK_PRIORITY_CLASS[$key] }} pull-right f-s-12">{{ $priority }}</span>
+				@if($task->getCollection)
+				<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
+				@endif
 			</div>
-			<div class="panel-footer">
+			<div class="panel-footer clearfix">
+				@if($task->start_date || $task->end_date)
 				<i class="fa fa-calendar m-r-5"></i>
+				@if($task->start_date)
+				{{ optional($task->start_date)->format('d/m/Y') }}
+				-
+				@endif
+				@endif
 				{{ optional($task->due_date)->format('d/m/Y') }}
 				@if($task->description)
 				<i class="fa fa-list pull-right m-t-3"></i>
@@ -41,6 +51,7 @@
 		<div class="modal-content pop-up">
 			<form id="formTask" autocomplete="off" action="{{ action('TaskController@store') }}" method="POST" class="pop-up-box" data-parsley-validate>
 				@csrf
+
 				<div class="panel mb-0">
 					<div class="panel-heading">
 						<h4 class="panel-title">Create new task</h4>
@@ -89,7 +100,7 @@
 						</div>
 					</div>
 					<div class="panel-footer clearfix">
-						<button type="submit" class="btn btn-primary btn-action pull-right">Create task</button>
+						<button type="submit" id="btn_submit" class="btn btn-primary btn-action pull-right">Create task</button>
 					</div>
 				</div>
 			</form>
@@ -135,7 +146,7 @@
 	</div>
 </div>
 
-<div id="btm-action" class="btm-nav" data-toggle="modal" data-target="#exampleModalCenter">
+<div id="btm-action" class="btm-nav" data-toggle="modal">
 	<div class="btm-item">
 		<i class="fa fa-2x fa-plus d-block"></i>
 	</div>
@@ -153,6 +164,10 @@
 			autoclose: true,
 			todayHighlight: true,
 			startDate: new Date()
+		});
+
+		$("#btm-action").click(function(){
+			triggerUpdateModal();
 		});
 
 		$(".task-panel").click(function(){
@@ -177,12 +192,21 @@
 		});
 
 		$("#btn_edittask").click(function(){
-			$("#task_title").removeAttr("readonly")
-			.removeClass("form-control-plaintext")
-			.focus();
+			// $("#task_title").removeAttr("readonly")
+			// .removeClass("form-control-plaintext")
+			// .focus();
 
-			$("#btngroup-edit").show();
-			$("#btngroup-show").hide();
+			// $("#btngroup-edit").show();
+			// $("#btngroup-show").hide();
+
+			var url = "/tasks/" + $("#task_id").val();
+			$.get(url, function(response){
+				console.log(response);
+				if(response.success){
+					var data = response.data;
+					triggerUpdateModal(data);
+				}
+			});
 		});
 
 		$("#btn_canceledit").click(function(){
@@ -240,6 +264,29 @@
 		function updateTask(taskobj){
 			var task_modal = $("div[data-task-id='" + taskobj.id + "']");
 			task_modal.find(".task_title").text(taskobj.title);
+		}
+
+		function triggerUpdateModal(taskobj){
+			var modal = $("#exampleModalCenter");
+
+			if(taskobj != null){
+				$("#taskDetail").modal("toggle");
+				modal.find(".panel-title").text("Edit Task");
+				modal.find("input[name='title']").val(taskobj.title);
+				modal.find("textarea[name='description']").text(taskobj.description);
+				modal.find("input[name='startdate']").val(taskobj.shortStartDate);
+				modal.find("input[name='duedate']").val(taskobj.shortDueDate);
+				modal.find("select[name='priority']").val(taskobj.priority);
+				modal.find("select[name='collection_id']").val(taskobj.collection_id);
+				modal.find("form").attr("action", "/tasks/" + taskobj.id).append('<input type="hidden" name="_method" value="PUT">');
+				modal.find("#btn_submit").text("Update Task");
+			} else {
+				modal.find("input[name='_method']").remove();
+				modal.find("form").attr("action", "/tasks/").attr("method", "POST").trigger("reset");
+				modal.find("#btn_submit").text("Create Task");
+			}
+
+			modal.modal("toggle");
 		}
 	});
 </script>
