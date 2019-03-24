@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    protected $dates = ['due_date'];
+    protected $dates = ['start_date', 'due_date'];
     const TASK_PRIORITY = [
     	"3" => "Low",
     	"2" => "Medium",

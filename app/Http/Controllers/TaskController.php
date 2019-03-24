@@ -52,9 +52,13 @@ class TaskController extends Controller
             $task->priority = $request->priority;
 
             //Parse date accepted from front-end to MySQL acceptable date format
+            $task->start_date = ($request->startdate) ? Carbon::createFromFormat('d/m/Y', $request->startdate) : null; 
             $task->due_date = ($request->duedate) ? Carbon::createFromFormat('d/m/Y', $request->duedate) : null; 
             
             $task->user_id = Auth::user()->id;
+
+            $task->collection_id = $request->collection_id;
+
             $task->save();
 
             $this::successMessage("New task added!");
@@ -74,6 +78,8 @@ class TaskController extends Controller
     {
         try {
             $task = Task::find($id);
+            $task->shortStartDate = optional($task->start_date)->format('d/m/Y');
+            $task->shortDueDate = optional($task->due_date)->format('d/m/Y');
             return response()->json(['data' => $task]);
         } catch (\Exception $e) {
 
@@ -119,6 +125,14 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $task = Task::find($id);
+            $task->delete();
+
+            $this::successMessage("Task deleted!");
+            return response()->json(["success" => true]);
+        } catch (Exception $e) {
+            return response()->json(["success" => false, "msg" => $e->getMessage()]);
+        }
     }
 }

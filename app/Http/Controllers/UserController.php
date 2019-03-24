@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 
 use \App\Task;
+use \App\Collection;
 
 class UserController extends Controller
 {
@@ -46,9 +47,11 @@ class UserController extends Controller
         ->orderBy("priority", "ASC")
         ->get();
 
+        $cls = Collection::where("user_id", \Auth::user()->id)->get();
+
         $tasks = $tasks->groupBy("priority");
 
-		return view("user/dashboard", compact("tasks"));
+		return view("user/dashboard", compact("tasks", "cls"));
 	}
 
 	public function profile()

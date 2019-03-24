@@ -55,21 +55,19 @@
 							<textarea rows="4" name="description" class="form-control form-control-lg" placeholder="Enter Task Description"></textarea>
 						</div>
 						<div class="row">
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<div class="form-group">
 									<label class="title">Start Date (Optional)</label>
 									<input name="startdate" type="datepicker" placeholder="Select Start Date" class="form-control form-control-lg">
 								</div>
 							</div>
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<div class="form-group">
 									<label class="title">Due Date</label>
 									<input name="duedate" type="datepicker" placeholder="Select Due Date" class="form-control form-control-lg">
 								</div>
 							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<div class="form-group">
 									<label class="title">Priority</label>
 									<select name="priority" class="form-control form-control-lg">
@@ -82,7 +80,12 @@
 						</div>
 						<div class="form-group">
 							<label class="title">Save your task into a collection for better organization</label>
-							<select class="form-control form-control-lg"></select>
+							<select name="collection_id" class="form-control form-control-lg">
+								<option value="">None</option>
+								@foreach($cls AS $cl)
+								<option value="{{ $cl->id }}">{{ $cl->title }}</option>
+								@endforeach
+							</select>
 						</div>
 					</div>
 					<div class="panel-footer clearfix">
@@ -108,7 +111,12 @@
 					</button>
 				</div>
 				<div class="panel-body">
+					<div>
+						<i class="fa fa-calendar m-r-5"></i><span id="task_startdate"></span><span id="task_duedate"></span>
+					</div>
+
 					<div id="task_desc"></div>
+
 					<input hidden id="task_id">
 				</div>
 				<div class="panel-footer">
@@ -116,7 +124,11 @@
 						<button id="btn_canceledit" type="button" class="btn btn-default btn-action">Cancel Edit</button>
 						<button id="btn_updatetask" type="button" class="btn btn-primary btn-action">Udpdate</button>
 					</div>
-					<button id="btn_edittask" type="button" class="btn btn-success btn-action">Edit</button>
+					<div id="btngroup-show">
+						<button id="btn_edittask" type="button" class="btn btn-success btn-action">Edit</button>
+						<button id="btn_deletetask" type="button" class="btn btn-danger btn-action">Delete</button>
+						<button id="btn_completetask" class="btn btn-lime btn-action pull-right" type="button">I've completed this task</button>
+					</div>
 				</div>
 			</form>
 		</div>
@@ -131,6 +143,9 @@
 @stop
 
 @section("page_script")
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.all.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.min.css" />
+
 <script type="text/javascript">
 	$(function(){
 		$("input[type='datepicker']").datepicker({
@@ -141,6 +156,7 @@
 		});
 
 		$(".task-panel").click(function(){
+			triggerUpdate();
 			var url = "/tasks/" + $(this).attr("data-task-id");
 			$.get(url, function(response){
 				console.log(response);
@@ -148,6 +164,14 @@
 				$("#task_id").val(data.id);
 				$("#task_title").prop("readonly", "").val(data.title);
 				$("#task_desc").text(data.description);
+				$("#task_startdate").text(data.shortStartDate);
+
+				if(data.shortStartDate != null){
+					$("#task_duedate").text(" - " + data.shortDueDate);
+				} else {
+					$("#task_duedate").text(data.shortDueDate);
+				}
+				
 				$("#taskDetail").modal("show");
 			});
 		});
@@ -158,12 +182,11 @@
 			.focus();
 
 			$("#btngroup-edit").show();
-			$(this).hide();
+			$("#btngroup-show").hide();
 		});
 
 		$("#btn_canceledit").click(function(){
-			$("#btngroup-edit").hide();
-			$("#btn_edittask").show();
+			triggerUpdate();
 		});
 
 		$("#btn_updatetask").click(function(){
@@ -172,7 +195,6 @@
 				method: "PUT",
 				data: $("#form_taskedit").serialize(),
 				success: function(response){
-					console.log(response);
 					if(response.success){
 						var data = response.data;
 						updateTask(data);
@@ -181,6 +203,39 @@
 				}
 			})
 		});
+
+		$("#btn_deletetask").click(function(){
+			Swal.fire({
+				title: 'Are you sure?',
+				text: "Deleted tasks cannot be recovered.",
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, delete it!'
+			}).then((result) => {
+				if (result.value) {
+					$.ajax({
+						url: "/tasks/" + $("#task_id").val(),
+						method: "DELETE",
+						data: $("#form_taskedit").serialize(),
+						success: function(response){
+							if(response.success){
+								window.location.reload();
+							}
+						}
+					})
+				}
+			})
+		});
+
+		function triggerUpdate(){
+			$("#task_title").removeAttr("readonly")
+			.addClass("form-control-plaintext");
+
+			$("#btngroup-edit").hide();
+			$("#btngroup-show").show();
+		}
 
 		function updateTask(taskobj){
 			var task_modal = $("div[data-task-id='" + taskobj.id + "']");
