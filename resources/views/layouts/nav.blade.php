@@ -108,7 +108,7 @@
 						</a>
 					</li>
 					<li>
-						<a href="widget.html">
+						<a href="/settings">
 							<i class="fas fa-cogs"></i> 
 							<span>Settings</span> 
 						</a>
