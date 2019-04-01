@@ -15,7 +15,7 @@ class AlterTasksTable extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
             $table->datetime('start_date')->nullable()->after('priority');
-            $table->datetime('min_duration')->nullable()->after('priority');
+            $table->integer('min_duration')->nullable()->after('priority');
         });
     }
 

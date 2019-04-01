@@ -3,20 +3,22 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Task extends Model
 {
     protected $dates = ['start_date', 'due_date'];
+
     const TASK_PRIORITY = [
-    	"3" => "Low",
-    	"2" => "Medium",
-    	"1" => "High"
+        "1" => "High",
+        "2" => "Medium",
+    	"3" => "Low"
     ];
 
     const TASK_PRIORITY_CLASS = [
-    	"3" => "label-green",
-    	"2" => "label-warning",
-    	"1" => "label-danger"
+        "1" => "label-danger",
+        "2" => "label-warning",
+    	"3" => "label-green"
     ];
 
     public function getCollection(){

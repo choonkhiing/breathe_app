@@ -212,3 +212,54 @@ button.logout_btn {
     height: 70px;
     object-fit: cover;
 }
+
+/*Neon*/
+.today_warning {
+  color: #f74e4e;
+  -webkit-animation-name: hvr-pulse;
+  animation-name: hvr-pulse;
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+
+}
+
+/* Pulse */
+@-webkit-keyframes hvr-pulse {
+  25% {
+    -webkit-transform: scale(1.03);
+    transform: scale(1.03);
+  }
+  75% {
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+  }
+}
+@keyframes hvr-pulse {
+  25% {
+    -webkit-transform: scale(1.03);
+    transform: scale(1.03);
+  }
+  75% {
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+  }
+}
+.hvr-pulse {
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+}
+
+.stressLevelBar .progress {
+    font-size: 18px;
+    height: 25px;
+    margin-bottom: 25px;
+}
+
+

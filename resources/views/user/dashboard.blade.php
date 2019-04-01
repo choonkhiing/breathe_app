@@ -3,11 +3,78 @@
 @section("header", "Dashboard")
 
 @section("content")
+<div class="stressLevelBar">
+<div class="progress rounded-corner">
+@if ($stressLevel >= 0 && $stressLevel < 25) 
+<div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
+@elseif ($stressLevel >= 25 && $stressLevel < 50)
+<div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
+@elseif ($stressLevel >= 50 && $stressLevel < 75)
+<div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
+@elseif ($stressLevel >= 75)
+<div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
+@endif 
+{{ $stressLevel }}% Stress Level
+</div>
+</div>
+</div>
+<h3>Today: {{ $user->max_hour }} hour(s) per day.</h3>
 <div class="task-list row">
 	@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
-	@if(!empty($tasks[$key]))
+	@if(!empty($todayTasks[$key]))
 	<div class="col-md-4">
-		@foreach($tasks[$key] AS $task)
+		@foreach($todayTasks[$key] AS $task)
+		<div class="panel task-panel" data-task-id="{{ $task->id }}">
+			<div class="panel-body">
+				<strong class="f-s-13 task_title pull-left">
+					#{{ $loop->iteration }} {{ $task->title }}
+				</strong>
+				<span class="label {{ \App\Task::TASK_PRIORITY_CLASS[$key] }} pull-right f-s-12">{{ $priority }}</span>
+				@if($task->getCollection)
+				<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
+				@endif
+				<br>
+				<strong class="f-s-13 task_titlet">Min. Duration: {{ $task->min_duration }} hours(s)</strong>
+			</div>
+			<div class="panel-footer clearfix">
+				@if($task->due_date->isToday())
+				<span class="today_warning hvr-pulse">
+				<i class="fa fa-calendar m-r-5"></i>
+				{{ optional($task->start_date)->format('d/m/Y') }}
+				-			
+				{{ optional($task->due_date)->format('d/m/Y') }}
+				</span>
+				@else 
+				<i class="fa fa-calendar m-r-5"></i>
+				{{ optional($task->start_date)->format('d/m/Y') }}
+				-			
+				{{ optional($task->due_date)->format('d/m/Y') }}
+				@endif
+				@if($task->description)
+				<i class="fa fa-list pull-right m-t-3"></i>
+				@endif
+			</div>
+		</div>
+		@endforeach
+	</div>
+	@else
+	<div class="col-md-4">
+		<div class="panel">
+			<div class="panel-body">
+				{{ $priority }} priority tasks goes here!
+			</div>
+		</div>
+	</div>
+	@endif
+	@endforeach
+</div>
+
+<h3>Upcomings</h3>
+<div class="task-list row">
+	@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
+	@if(!empty($upcomingTasks[$key]))
+	<div class="col-md-4">
+		@foreach($upcomingTasks[$key] AS $task)
 		<div class="panel task-panel" data-task-id="{{ $task->id }}">
 			<div class="panel-body">
 				<strong class="f-s-13 task_title pull-left">
@@ -66,22 +133,30 @@
 							<textarea rows="4" name="description" class="form-control form-control-lg" placeholder="Enter Task Description"></textarea>
 						</div>
 						<div class="row">
-							<div class="col-md-4">
+							<div class="col-md-6">
 								<div class="form-group">
-									<label class="title">Start Date (Optional)</label>
-									<input name="startdate" type="datepicker" placeholder="Select Start Date" class="form-control form-control-lg">
+									<label class="title">Start Date</label>
+									<input name="startdate" data-parsley-required="true" type="datepicker" placeholder="Select Start Date" class="form-control form-control-lg">
 								</div>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-6">
 								<div class="form-group">
 									<label class="title">Due Date</label>
-									<input name="duedate" type="datepicker" placeholder="Select Due Date" class="form-control form-control-lg">
+									<input name="duedate" data-parsley-required="true" type="datepicker" placeholder="Select Due Date" class="form-control form-control-lg">
 								</div>
 							</div>
-							<div class="col-md-4">
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="title">Min. Duration</label>
+									<input name="min_duration" data-parsley-required="true" data-parsley-type="integer" placeholder="Min. Duration" class="form-control form-control-lg">
+								</div>
+							</div>
+							<div class="col-md-6">
 								<div class="form-group">
 									<label class="title">Priority</label>
-									<select name="priority" class="form-control form-control-lg">
+									<select name="priority" data-parsley-required="true" class="form-control form-control-lg">
 										<option value="3">Low</option>
 										<option value="2">Medium</option>
 										<option value="1">High</option>
@@ -93,9 +168,7 @@
 							<label class="title">Save your task into a collection for better organization</label>
 							<select name="collection_id" class="form-control form-control-lg">
 								<option value="">None</option>
-								@foreach($cls AS $cl)
-								<option value="{{ $cl->id }}">{{ $cl->title }}</option>
-								@endforeach
+								
 							</select>
 						</div>
 					</div>
@@ -276,6 +349,7 @@
 				modal.find("textarea[name='description']").text(taskobj.description);
 				modal.find("input[name='startdate']").val(taskobj.shortStartDate);
 				modal.find("input[name='duedate']").val(taskobj.shortDueDate);
+				modal.find("input[name='min_duration']").val(taskobj.min_duration);
 				modal.find("select[name='priority']").val(taskobj.priority);
 				modal.find("select[name='collection_id']").val(taskobj.collection_id);
 				modal.find("form").attr("action", "/tasks/" + taskobj.id).append('<input type="hidden" name="_method" value="PUT">');

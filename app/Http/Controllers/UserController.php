@@ -7,6 +7,7 @@ use \App\User;
 use Auth;
 use Session;
 use Carbon\Carbon;
+use DB;
 use File;
 use Storage;
 use Redirect;
@@ -43,15 +44,44 @@ class UserController extends Controller
 
 	public function dashboard()
 	{
-		$tasks = Task::orderBy("due_date", "ASC")
-        ->orderBy("priority", "ASC")
+		$tasks = Task::where("start_date", "<=", Carbon::now()->toDateTimeString())
+		->where("status", 0)->orderBy("due_date", "ASC")
+        ->orderBy("priority", "DESC")
         ->get();
 
-        $cls = Collection::where("user_id", \Auth::user()->id)->get();
+        //User setting
+        $user = User::find(Auth::user()->id);
+        $used_hour = 0;
 
-        $tasks = $tasks->groupBy("priority");
+        //$cls = Collection::where("user_id", \Auth::user()->id)->get();
+        $cls = null;
 
-		return view("user/dashboard", compact("tasks", "cls"));
+        $todayTasks = collect(new Task);
+        $upcomingTasks = collect(new Task);
+
+        //Split the tasks into today's and upcoming's task(s)
+        foreach ($tasks AS $task) {
+        	//Prioritize on due date 
+        	if ($task->due_date->isToday()) {
+        		$todayTasks->push($task);	
+        		$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
+        	}
+        	else {
+        		if ($used_hour - $user->max_hour >= 0) { //Add some tasks to today if there is time
+        			$todayTasks->push($task);
+        			$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
+        		}
+        		else {
+        			$upcomingTasks->push($task);
+        		}
+        	}
+        }
+
+        $stressLevel = $this->calStressLevel($used_hour, $user->max_hour);
+		$todayTasks = $todayTasks->groupBy("priority");
+		$upcomingTasks = $upcomingTasks->groupBy("priority");
+
+		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "stressLevel", "user", "cls"));
 	}
 
 	public function profile()
@@ -133,4 +163,10 @@ class UserController extends Controller
 		Auth::logout();
 		return redirect::route("login");
 	}
+
+	public function calStressLevel($used_hour, $max_hour) {
+		$stressLevel = $used_hour / $max_hour * 100;
+
+		return ceil($stressLevel);
+    }
 }

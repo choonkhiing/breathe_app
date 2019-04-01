@@ -50,6 +50,7 @@ class TaskController extends Controller
             $task->title = $request->title;
             $task->description = $request->description;
             $task->priority = $request->priority;
+            $task->min_duration = $request->min_duration;
 
             //Parse date accepted from front-end to MySQL acceptable date format
             $task->start_date = ($request->startdate) ? Carbon::createFromFormat('d/m/Y', $request->startdate) : null; 
@@ -111,6 +112,7 @@ class TaskController extends Controller
             $task->title = $request->title;
             $task->description = $request->description;
             $task->priority = $request->priority;
+            $task->min_duration = $request->min_duration;
 
             //Parse date accepted from front-end to MySQL acceptable date format
             $task->start_date = ($request->startdate) ? Carbon::createFromFormat('d/m/Y', $request->startdate) : null; 
