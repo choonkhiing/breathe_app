@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 
 use \App\Task;
 use \App\Collection;
+use \App\Setting;
 
 class UserController extends Controller
 {
@@ -50,7 +51,7 @@ class UserController extends Controller
         ->get();
 
         //User setting
-        $user = User::find(Auth::user()->id);
+        $setting = Setting::find(Auth::user()->id);
         $used_hour = 0;
 
         //$cls = Collection::where("user_id", \Auth::user()->id)->get();
@@ -67,7 +68,7 @@ class UserController extends Controller
         		$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
         	}
         	else {
-        		if ($user->max_hour - $used_hour >= 0) { //Add some tasks to today if there is time
+        		if ($setting->max_hour - $used_hour >= 0) { //Add some tasks to today if there is time
         			$todayTasks->push($task);
         			$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
         		}
@@ -77,11 +78,11 @@ class UserController extends Controller
         	}
         }
 
-        $stressLevel = $this->calStressLevel($used_hour, $user->max_hour);
+        $stressLevel = $this->calStressLevel($used_hour, $setting->max_hour);
 		$todayTasks = $todayTasks->groupBy("priority");
 		$upcomingTasks = $upcomingTasks->groupBy("priority");
 
-		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "stressLevel", "user", "cls"));
+		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "stressLevel", "setting", "cls"));
 	}
 
 	public function profile()

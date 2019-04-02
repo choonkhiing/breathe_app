@@ -20,7 +20,7 @@
 </div>
 </div>
 </div>
-<h3>Today: {{ $user->max_hour }} hour(s) per day.</h3>
+<h3>Today: {{ $setting->max_hour }} hour(s) per day.</h3>
 <div class="task-list row">
 	@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
 	@if(!empty($todayTasks[$key]))
