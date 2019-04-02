@@ -4,6 +4,7 @@
 
 @section("content")
 <div class="stressLevelBar">
+<<<<<<< HEAD
 	<div class="progress rounded-corner">
 		@if ($stressLevel >= 0 && $stressLevel < 25) 
 		<div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
@@ -17,6 +18,90 @@
 						{{ $stressLevel }}% Stress Level
 					</div>
 				</div>
+=======
+<div class="progress rounded-corner">
+@if ($stressLevel == 0) 
+<div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%">
+@elseif ($stressLevel >= 0 && $stressLevel < 25) 
+<div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
+@elseif ($stressLevel >= 25 && $stressLevel < 50)
+<div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
+@elseif ($stressLevel >= 50 && $stressLevel < 75)
+<div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
+@elseif ($stressLevel >= 75)
+<div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
+@endif 
+{{ $stressLevel }}% Stress Level
+</div>
+</div>
+</div>
+<h3>Today: {{ $setting->max_hour }} hour(s) per day.</h3>
+<div class="task-list row">
+	@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
+	@if(!empty($todayTasks[$key]))
+	<div class="col-md-4">
+		@foreach($todayTasks[$key] AS $task)
+		<div class="panel task-panel" data-task-id="{{ $task->id }}">
+			<div class="panel-body">
+				<strong class="f-s-13 task_title pull-left">
+					#{{ $loop->iteration }} {{ $task->title }}
+				</strong>
+				<span class="label {{ \App\Task::TASK_PRIORITY_CLASS[$key] }} pull-right f-s-12">{{ $priority }}</span>
+				@if($task->getCollection)
+				<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
+				@endif
+				<br>
+				<strong class="f-s-13 task_titlet">Min. Duration: {{ $task->min_duration }} hours(s)</strong>
+			</div>
+			<div class="panel-footer clearfix">
+				@if($task->due_date->isToday())
+				<span class="today_warning hvr-pulse">
+				<i class="fa fa-calendar m-r-5"></i>
+				{{ optional($task->start_date)->format('d/m/Y') }}
+				-			
+				{{ optional($task->due_date)->format('d/m/Y') }}
+				</span>
+				@else 
+				<i class="fa fa-calendar m-r-5"></i>
+				{{ optional($task->start_date)->format('d/m/Y') }}
+				-			
+				{{ optional($task->due_date)->format('d/m/Y') }}
+				@endif
+				@if($task->description)
+				<i class="fa fa-list pull-right m-t-3"></i>
+				@endif
+			</div>
+		</div>
+		@endforeach
+	</div>
+	@else
+	<div class="col-md-4">
+		<div class="panel">
+			<div class="panel-body">
+				{{ $priority }} priority tasks goes here!
+			</div>
+		</div>
+	</div>
+	@endif
+	@endforeach
+</div>
+
+<h3>Upcomings</h3>
+<div class="task-list row">
+	@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
+	@if(!empty($upcomingTasks[$key]))
+	<div class="col-md-4">
+		@foreach($upcomingTasks[$key] AS $task)
+		<div class="panel task-panel" data-task-id="{{ $task->id }}">
+			<div class="panel-body">
+				<strong class="f-s-13 task_title pull-left">
+					#{{ $loop->iteration }} {{ $task->title }}
+				</strong>
+				<span class="label {{ \App\Task::TASK_PRIORITY_CLASS[$key] }} pull-right f-s-12">{{ $priority }}</span>
+				@if($task->getCollection)
+				<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
+				@endif
+>>>>>>> d8f5064a6363efb9f707f3420c596d588df79c4f
 			</div>
 			<h3>Today: {{ $user->max_hour }} hour(s) per day.</h3>
 			<div class="task-list row">

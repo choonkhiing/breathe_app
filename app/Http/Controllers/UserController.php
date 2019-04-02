@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 
 use \App\Task;
 use \App\Collection;
+use \App\Setting;
 
 class UserController extends Controller
 {
@@ -50,7 +51,7 @@ class UserController extends Controller
         ->get();
 
         //User setting
-        $user = User::find(Auth::user()->id);
+        $setting = Setting::find(Auth::user()->id);
         $used_hour = 0;
 
         //$cls = Collection::where("user_id", \Auth::user()->id)->get();
@@ -67,7 +68,7 @@ class UserController extends Controller
         		$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
         	}
         	else {
-        		if ($used_hour - $user->max_hour >= 0) { //Add some tasks to today if there is time
+        		if ($setting->max_hour - $used_hour >= 0) { //Add some tasks to today if there is time
         			$todayTasks->push($task);
         			$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
         		}
@@ -77,12 +78,16 @@ class UserController extends Controller
         	}
         }
 
-        $stressLevel = $this->calStressLevel($used_hour, $user->max_hour);
+        $stressLevel = $this->calStressLevel($used_hour, $setting->max_hour);
 		$todayTasks = $todayTasks->groupBy("priority");
 		$upcomingTasks = $upcomingTasks->groupBy("priority");
 
+<<<<<<< HEAD
 
 		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "used_hour", "stressLevel", "user", "cls"));
+=======
+		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "stressLevel", "setting", "cls"));
+>>>>>>> d8f5064a6363efb9f707f3420c596d588df79c4f
 	}
 
 	public function profile()
@@ -143,6 +148,11 @@ class UserController extends Controller
 				$user->phone = $request->phone;
 				$user->save();
 
+				//Save settings
+                $setting = new Setting();
+                $setting->user_id = $new_user->id;
+                $setting->save();
+
 				if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
    		 			// The user is active, not suspended, and exists.
 					return redirect('/dashboard');
@@ -166,7 +176,13 @@ class UserController extends Controller
 	}
 
 	public function calStressLevel($used_hour, $max_hour) {
-		$stressLevel = $used_hour / $max_hour * 100;
+		if ($max_hour == 0) {
+			$stressLevel = 0;
+		}
+		else {
+			$stressLevel = $used_hour / $max_hour * 100;
+		}
+		
 
 		return ceil($stressLevel);
     }

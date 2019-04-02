@@ -14,6 +14,7 @@ class AlterTasksTable extends Migration
     public function up()
     {
         Schema::table('tasks', function (Blueprint $table) {
+            $table->integer('max_hour')->default(8)->after('status');
             $table->datetime('start_date')->nullable()->after('priority');
             $table->integer('min_duration')->nullable()->after('priority');
         });
