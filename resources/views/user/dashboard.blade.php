@@ -5,7 +5,9 @@
 @section("content")
 <div class="stressLevelBar">
 <div class="progress rounded-corner">
-@if ($stressLevel >= 0 && $stressLevel < 25) 
+@if ($stressLevel == 0) 
+<div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%">
+@elseif ($stressLevel >= 0 && $stressLevel < 25) 
 <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
 @elseif ($stressLevel >= 25 && $stressLevel < 50)
 <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
