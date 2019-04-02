@@ -45,7 +45,8 @@ class UserController extends Controller
 
 	public function dashboard()
 	{
-		$tasks = Task::where("start_date", "<=", Carbon::now()->toDateTimeString())
+		$tasks = Task::whereDate("start_date", "<=", Carbon::today())
+		->whereDate("due_date", ">=", Carbon::today())
 		->where("status", 0)->orderBy("due_date", "ASC")
         ->orderBy("priority", "DESC")
         ->get();
@@ -68,9 +69,12 @@ class UserController extends Controller
         		$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
         	}
         	else {
-        		if ($setting->max_hour - $used_hour >= 0) { //Add some tasks to today if there is time
-        			$todayTasks->push($task);
-        			$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
+        		if ($task->start_date->format('Y-m-d') <= Carbon::today()->format('Y-m-d')) {
+        			if ($setting->max_hour - ($used_hour + $task->min_duration) >= 0) { 
+        				//Add some 	tasks to today if there is time
+        				$todayTasks->push($task);
+        				$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
+        			}
         		}
         		else {
         			$upcomingTasks->push($task);
@@ -78,13 +82,31 @@ class UserController extends Controller
         	}
         }
 
+        $tasks = Task::whereDate("start_date", ">", Carbon::today())
+		->whereDate("due_date", ">=", Carbon::today())
+		->where("status", 0)->orderBy("due_date", "ASC")
+        ->orderBy("priority", "DESC")
+        ->get();
+        foreach ($tasks AS $task) {
+        	//Prioritize on due date 
+        	if ($task->due_date->isToday()) {
+        		$todayTasks->push($task);	
+        		$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
+        	}
+        	else {
+        		$upcomingTasks->push($task);
+        	}
+        }
+
+
         $stressLevel = $this->calStressLevel($used_hour, $setting->max_hour);
 		$todayTasks = $todayTasks->groupBy("priority");
 		$upcomingTasks = $upcomingTasks->groupBy("priority");
 
 
 
-		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "used_hour", "stressLevel", "user", "cls"));
+		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "used_hour", "stressLevel", "cls", "setting"));
+		}
 
 	public function profile()
 	{	
@@ -179,7 +201,9 @@ class UserController extends Controller
 			$stressLevel = $used_hour / $max_hour * 100;
 		}
 		
-
 		return ceil($stressLevel);
     }
+
+
+
 }
