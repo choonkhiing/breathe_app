@@ -4,21 +4,7 @@
 
 @section("content")
 <div class="stressLevelBar">
-<<<<<<< HEAD
-	<div class="progress rounded-corner">
-		@if ($stressLevel >= 0 && $stressLevel < 25) 
-		<div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
-			@elseif ($stressLevel >= 25 && $stressLevel < 50)
-			<div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
-				@elseif ($stressLevel >= 50 && $stressLevel < 75)
-				<div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
-					@elseif ($stressLevel >= 75)
-					<div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
-						@endif 
-						{{ $stressLevel }}% Stress Level
-					</div>
-				</div>
-=======
+
 <div class="progress rounded-corner">
 @if ($stressLevel == 0) 
 <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%">
@@ -101,7 +87,6 @@
 				@if($task->getCollection)
 				<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
 				@endif
->>>>>>> d8f5064a6363efb9f707f3420c596d588df79c4f
 			</div>
 			<h3>Today: {{ $user->max_hour }} hour(s) per day.</h3>
 			<div class="task-list row">

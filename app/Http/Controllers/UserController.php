@@ -82,13 +82,9 @@ class UserController extends Controller
 		$todayTasks = $todayTasks->groupBy("priority");
 		$upcomingTasks = $upcomingTasks->groupBy("priority");
 
-<<<<<<< HEAD
+
 
 		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "used_hour", "stressLevel", "user", "cls"));
-=======
-		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "stressLevel", "setting", "cls"));
->>>>>>> d8f5064a6363efb9f707f3420c596d588df79c4f
-	}
 
 	public function profile()
 	{	
