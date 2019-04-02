@@ -1,0 +1,28 @@
+@extends('beautymail::templates.sunny')
+
+@section('content')
+@include('beautymail::templates.sunny.contentStart')
+<h1 style="text-align: center;margin-bottom: 30px;margin-top: 25px;">Breathe Reminder</h1>
+<p>
+	Hi <strong>{{ $user->name }}</strong>, 
+</p>
+<p>
+	There is a task due soon! Please make sure that you arrange your tasks well in finishing them on time.</b> 
+</p>
+<table width="100%" cellpadding="0" cellspacing="0">
+	<tr style="background: whitesmoke;">
+		<th width="50%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro;">Task Title</th>
+		<th width="50%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro;">Due Date</th>
+	</tr>
+	@foreach($tasks AS $task)
+	<tr style="background: whitesmoke;">
+		<td width="50%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro; text-align: center;">{{ $task->title }}</td>
+		<td width="50%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro; text-align: center;">{{ date('d-m-Y', strtotime($task->due_date)) }}</td>
+	</tr>
+	@endforeach
+</table>
+
+<p style="text-align: center;"><a href="http://localhost:8000" style="padding: 10px 45px;background: #00acac;color: white;font-size: 16px;margin-top: 37px;display: block;    margin-bottom: -35px;">Visit Us</a></p>
+
+@include('beautymail::templates.sunny.contentEnd')
+@stop
