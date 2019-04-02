@@ -79,8 +79,9 @@ class UserController extends Controller
         }
 
         $stressLevel = $this->calStressLevel($used_hour, $setting->max_hour);
-        $todayTasks = $todayTasks->groupBy("priority");
-        $upcomingTasks = $upcomingTasks->groupBy("priority");
+
+		$todayTasks = $todayTasks->groupBy("priority");
+		$upcomingTasks = $upcomingTasks->groupBy("priority");
 
         return view("user/dashboard", compact("todayTasks", "upcomingTasks", "stressLevel", "setting", "cls"));
     }
