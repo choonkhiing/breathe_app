@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \App\User;
+use \App\Setting;
 use Auth;
 use Session;
 use Carbon\Carbon;
@@ -17,19 +18,21 @@ class SettingsController extends Controller
 {
 	public function showSettings()
 	{
-		$user = User::find(Auth::user()->id);
-		return view("/user/settings", compact("user"));
+		$setting = Setting::where('user_id',Auth::user()->id)->first();
+		return view("/user/settings", compact("setting"));
 	}
 
 	public function saveSettings(Request $request)
     {
     	try
 		{
-			$user = User::findOrFail(Auth::user()->id);
-        	$user->max_hour = $request->max_hour;
-        	$user->save();
+			$setting = Setting::where('user_id',Auth::user()->id)->first();
+        	$setting->max_hour = $request->max_hour;
+        	$setting->reminder_time = $request->reminder_time;
+        	$setting->day_before_remind = $request->day_before_remind;
+        	$setting->save();
 
-        	Session::flash("success", "Maximum hour/day updated!");
+        	Session::flash("success", "Setting updated!");
         	return redirect::back();
         }
         catch (\Exception $e) {
