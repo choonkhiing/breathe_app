@@ -16,12 +16,20 @@
 			</div>
 			<div class="panel">
 				<div class="panel-heading">
-					<h4 class="panel-title">Maximum Hour/Day</h4>
+					<h4 class="panel-title">Settings</h4>
 				</div>
 				<div class="panel-body">
 					<div class="form-group">
 						<label class="max_hour">Hour</label>
-						<input name="max_hour" type="text" value="{{$user->max_hour}}" class="form-control form-control-lg" placeholder="Enter Hour" data-parsley-type="digits" data-parsley-required="true">
+						<input name="max_hour" type="text" value="{{$setting->max_hour}}" class="form-control form-control-lg" placeholder="Enter Hour" data-parsley-type="digits" data-parsley-required="true">
+					</div>
+					<div class="form-group">
+						<label class="reminder_time">Reminder Time</label>
+						<input name="reminder_time" type="text" id="datetimepicker" value="{{$setting->reminder_time}}" class="form-control form-control-lg" placeholder="Select Reminder Time" data-parsley-required="true">
+					</div>
+					<div class="form-group">
+						<label class="day_before_remind">Day Before Remind</label>
+						<input name="day_before_remind" type="text" value="{{$setting->day_before_remind}}" class="form-control form-control-lg" placeholder="Enter Day" data-parsley-type="digits" data-parsley-required="true">
 					</div>
 				</div>
 				<div class="panel-footer clearfix">
@@ -32,4 +40,16 @@
 	</div>
 </form>
 @endsection
+
+@section("page_script")
+			<script type="text/javascript">
+				$(function(){
+					$('#datetimepicker').datetimepicker({
+						format: "d/M/Y HH:mm",
+						minDate	: new Date(),
+						date: "{{$setting->reminder_time}}"
+					});
+				});
+			</script>
+@stop
 
