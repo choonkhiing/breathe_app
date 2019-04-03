@@ -17,6 +17,8 @@ Route::post('/logout', 'UserController@logout');
 Route::get('/register', 'UserController@showregister');
 Route::post('/register', 'UserController@register');
 
+//Test Reminder
+Route::get('/test-reminder', 'UserController@testReminder');
 
 //Facebook Login
 Route::get('/fb/redirect', 'SocialAuthFacebookController@redirect');
@@ -36,3 +38,4 @@ Route::middleware(['auth'])->group(function () {
 	Route::resource('tasks', 'TaskController');
 	Route::resource('collections', 'CollectionController');
 });
+
