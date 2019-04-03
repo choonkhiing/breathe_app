@@ -58,6 +58,11 @@ class UserController extends Controller
 
 		$cls = Collection::where("user_id", \Auth::user()->id)->get();
 
+     $tasks = Task::whereDate("start_date", "<=", Carbon::today())
+        ->whereDate("due_date", ">=", Carbon::today())
+        ->where("status", 0)->orderBy("due_date", "ASC")
+        ->orderBy("priority", "DESC")
+        ->get();
 
 		$todayTasks = collect(new Task);
 		$upcomingTasks = collect(new Task);
@@ -90,6 +95,8 @@ class UserController extends Controller
         ->where("status", 0)->orderBy("due_date", "ASC")
         ->orderBy("priority", "DESC")
         ->get();
+       
+
         foreach ($tasks AS $task) {
         	//Prioritize on due date 
         	if ($task->due_date->isToday()) {
