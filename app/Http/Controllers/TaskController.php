@@ -8,6 +8,7 @@ use Auth;
 use Carbon\Carbon;
 
 use \App\Task;
+use \App\Setting;
 
 class TaskController extends Controller
 {
@@ -81,6 +82,12 @@ class TaskController extends Controller
             $task = Task::find($id);
             $task->shortStartDate = optional($task->start_date)->format('d/m/Y');
             $task->shortDueDate = optional($task->due_date)->format('d/m/Y');
+
+            $settings =  Setting::where("user_id", $task->user_id)->first();
+
+            // Calculate how many % of stress current task
+            $task->weightage = $this::calStressLevel($task->min_duration, $settings->max_hour);
+
             return response()->json(['success' => true, 'data' => $task]);
         } catch (Exception $e) {
            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
@@ -148,6 +155,18 @@ class TaskController extends Controller
             return response()->json(["success" => true]);
         } catch (Exception $e) {
             return response()->json(["success" => false, "msg" => $e->getMessage()]);
+        }
+    }
+
+    public function completeTask($id)
+    {
+        try {
+            $task = Task::find($id);
+            $task->status = 1;
+            $task->save();
+            return response()->json(["success" => true]);
+        } catch(Exception $e) {
+            return response()->json(["success" => false, "msg" => $e->getMessage()]); 
         }
     }
 }

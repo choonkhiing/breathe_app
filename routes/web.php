@@ -34,5 +34,6 @@ Route::middleware(['auth'])->group(function () {
 	Route::post('/profile/edit', 'UserController@editProfile');
 	//Route::post('/profile/edit', 'UserController@profileEdit');
 	Route::resource('tasks', 'TaskController');
+	Route::post('/task/completetask/{id}', 'TaskController@completeTask');
 	Route::resource('collections', 'CollectionController');
 });

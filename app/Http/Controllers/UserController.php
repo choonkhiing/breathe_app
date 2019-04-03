@@ -50,12 +50,16 @@ class UserController extends Controller
         ->orderBy("priority", "DESC")
         ->get();
 
+        $completedTasks = Task::whereDate("start_date", Carbon::now()->toDateString())
+		->where("status", 1)->orderBy("due_date", "ASC")
+        ->orderBy("priority", "DESC")
+        ->get();
+
         //User setting
-        $setting = Setting::find(Auth::user()->id);
+        $setting = Setting::where("user_id", Auth::user()->id)->first();
         $used_hour = 0;
 
-        //$cls = Collection::where("user_id", \Auth::user()->id)->get();
-        $cls = null;
+        $cls = Collection::where("user_id", \Auth::user()->id)->get();
 
         $todayTasks = collect(new Task);
         $upcomingTasks = collect(new Task);
@@ -78,11 +82,12 @@ class UserController extends Controller
         	}
         }
 
-        $stressLevel = $this->calStressLevel($used_hour, $setting->max_hour);
+        $stressLevel = $this::calStressLevel($used_hour, $setting->max_hour);
 		$todayTasks = $todayTasks->groupBy("priority");
 		$upcomingTasks = $upcomingTasks->groupBy("priority");
+		$completedTasks = $completedTasks->groupBy("priority");
 
-		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "stressLevel", "setting", "cls"));
+		return view("user/dashboard", compact("todayTasks", "completedTasks", "upcomingTasks", "stressLevel", "setting", "cls"));
 	}
 
 	public function profile()
@@ -170,15 +175,5 @@ class UserController extends Controller
 		return redirect::route("login");
 	}
 
-	public function calStressLevel($used_hour, $max_hour) {
-		if ($max_hour == 0) {
-			$stressLevel = 0;
-		}
-		else {
-			$stressLevel = $used_hour / $max_hour * 100;
-		}
-		
-
-		return ceil($stressLevel);
-    }
+	
 }

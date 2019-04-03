@@ -26,4 +26,15 @@ class Controller extends BaseController
     	Session::flash("type", "danger");
     	Session::flash("message", $message);
     }  
+
+    public function calStressLevel($used_hour, $max_hour) {
+        if ($max_hour == 0) {
+            $stressLevel = 0;
+        }
+        else {
+            $stressLevel = $used_hour / $max_hour * 100;
+        }
+
+        return ceil($stressLevel);
+    }
 }

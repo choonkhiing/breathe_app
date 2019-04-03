@@ -3,6 +3,7 @@
 @section("header", "Dashboard")
 
 @section("content")
+
 <div class="stressLevelBar">
 <div class="progress rounded-corner">
 @if ($stressLevel == 0) 
@@ -20,11 +21,31 @@
 </div>
 </div>
 </div>
+
 <h3>Today: {{ $setting->max_hour }} hour(s) per day.</h3>
-<div class="task-list row">
+
+<ul class="nav nav-pills">
+	<li class="nav-items">
+		<a href="#nav-pills-tab-1" data-toggle="tab" class="nav-link active">
+			<span class="d-sm-none">Pending</span>
+			<span class="d-sm-block d-none">Pending</span>
+		</a>
+	</li>
+	<li class="nav-items">
+		<a href="#nav-pills-tab-2" data-toggle="tab" class="nav-link">
+			<span class="d-sm-none">Completed</span>
+			<span class="d-sm-block d-none">Completed</span>
+		</a>
+	</li>
+</ul>
+
+<div class="tab-content p-0 bg-transparent">
+<!-- begin tab-pane -->
+	<div class="tab-pane fade active show" id="nav-pills-tab-1">
+	    <div class="task-list row">
 	@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
 	@if(!empty($todayTasks[$key]))
-	<div class="col-md-4">
+	<div class="col-md-4" data-priority="{{ $key }}">
 		@foreach($todayTasks[$key] AS $task)
 		<div class="panel task-panel" data-task-id="{{ $task->id }}">
 			<div class="panel-body">
@@ -36,7 +57,7 @@
 				<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
 				@endif
 				<br>
-				<strong class="f-s-13 task_titlet">Min. Duration: {{ $task->min_duration }} hours(s)</strong>
+				<strong class="f-s-13">Min. Duration: {{ $task->min_duration }} hours(s)</strong>
 			</div>
 			<div class="panel-footer clearfix">
 				@if($task->due_date->isToday())
@@ -60,7 +81,7 @@
 		@endforeach
 	</div>
 	@else
-	<div class="col-md-4">
+	<div class="col-md-4" data-priority="{{ $key }}">
 		<div class="panel">
 			<div class="panel-body">
 				{{ $priority }} priority tasks goes here!
@@ -70,6 +91,54 @@
 	@endif
 	@endforeach
 </div>
+	</div>
+	<!-- end tab-pane -->
+	<!-- begin tab-pane -->
+	<div class="tab-pane fade" id="nav-pills-tab-2">
+		<div class="task-list row"> 
+	   @foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
+	   @if(!empty($completedTasks[$key]))
+		@foreach($completedTasks[$key] AS $task)
+	<div class="col-md-4" data-priority="{{ $key }}">
+		<div class="panel" data-task-id="{{ $task->id }}">
+			<div class="panel-body">
+				<strong class="f-s-13 task_title pull-left">
+					#{{ $loop->iteration }} {{ $task->title }}
+				</strong>
+				<span class="label {{ \App\Task::TASK_PRIORITY_CLASS[$key] }} pull-right f-s-12">{{ $priority }}</span>
+				@if($task->getCollection)
+				<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
+				@endif
+				<br>
+				<strong class="f-s-13">Min. Duration: {{ $task->min_duration }} hours(s)</strong>
+			</div>
+			<div class="panel-footer clearfix">
+				@if($task->due_date->isToday())
+				<span class="today_warning hvr-pulse">
+				<i class="fa fa-calendar m-r-5"></i>
+				{{ optional($task->start_date)->format('d/m/Y') }}
+				-			
+				{{ optional($task->due_date)->format('d/m/Y') }}
+				</span>
+				@else 
+				<i class="fa fa-calendar m-r-5"></i>
+				{{ optional($task->start_date)->format('d/m/Y') }}
+				-			
+				{{ optional($task->due_date)->format('d/m/Y') }}
+				@endif
+				@if($task->description)
+				<i class="fa fa-list pull-right m-t-3"></i>
+				@endif
+			</div>
+		</div>
+	</div>
+		@endforeach
+	@endif
+	@endforeach
+</div>
+</div>
+
+
 
 <h3>Upcomings</h3>
 <div class="task-list row">
@@ -170,7 +239,9 @@
 							<label class="title">Save your task into a collection for better organization</label>
 							<select name="collection_id" class="form-control form-control-lg">
 								<option value="">None</option>
-								
+								@foreach($cls AS $cl)
+								<option value="{{ $cl->id }}">{{ $cl->title }}</option>
+								@endforeach
 							</select>
 						</div>
 					</div>
@@ -189,8 +260,8 @@
 			<form id="form_taskedit">
 				@csrf
 				<div class="panel-heading d-flex p-t-5 p-b-5" style="justify-content: space-between;">
-					<h4 class="panel-title" style="flex: 2">
-						<input id="task_title" name="edit_title" class="form-control form-control-lg form-control-plaintext" readonly="">
+					<h4 class="panel-title" id="task_title" style="flex: 2">
+						<!-- <input id="task_title" name="edit_title" class="form-control form-control-lg form-control-plaintext" readonly=""> -->
 					</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
@@ -252,7 +323,7 @@
 				console.log(response);
 				var data = response.data;
 				$("#task_id").val(data.id);
-				$("#task_title").prop("readonly", "").val(data.title);
+				$("#task_title").text(data.title);
 				$("#task_desc").text(data.description);
 				$("#task_startdate").text(data.shortStartDate);
 
@@ -327,6 +398,82 @@
 				}
 			})
 		});
+
+		var stressLvl = "{{ $stressLevel }}";
+
+		$("#btn_completetask").click(function(){
+			var task_id = $(this).closest("form").find("#task_id").val();
+			var elem = $("div[data-task-id='" + task_id + "']");
+			var url = "/tasks/" + task_id;
+			$.get(url, function(response){
+				console.log(response);
+				var data = response.data;
+				var weightage = data.weightage;
+				stressLvl = parseInt(stressLvl) - weightage;
+
+				$.ajax({
+					type: "POST",
+					url: "/task/completetask/" + task_id,
+					data: { _token: '{{ csrf_token() }}' },
+				}).done(function(response){
+
+					if(response.success){
+						var target_elem = $("div[data-priority='" + data.priority + "']");
+						$("#taskDetail").modal("hide");
+						elem.remove();
+
+						if(target_elem.find("div[data-task-id]").length == 0){
+							appendPlaceholder(target_elem, data.priority);
+						}
+
+						updateBar(stressLvl);
+					} else {
+						alert(response.msg);
+					}
+				});
+			});
+
+		});
+
+		function updateBar(stress_lvl){
+			var cssClass = "bg-success";
+			if(stress_lvl >= 25 && stress_lvl < 50) {
+				cssClass = "bg-info";
+			} else if(stress_lvl >= 50 && stress_lvl < 75) {
+				cssClass = "bg-warning";
+			} else if(stress_lvl >= 75) {
+				cssClass = "bg-danger";
+			}
+
+			if(stress_lvl <= 0){
+				stress_lvl = 100;
+			}
+
+			$(".progress-bar").removeClass().addClass("progress-bar progress-bar-striped progress-bar-animated " + cssClass)
+			.css("width", stress_lvl + "%")
+			.html(stress_lvl + "% Stress Level");
+		}
+
+		function appendPlaceholder(target, priority){
+			var priority_text = "Low";
+
+			switch(priority){
+				case 1:
+				priority_text = "High";
+				breakl
+				case 2:
+				priority_text = "Medium";
+				break;
+				case 3:
+				priority_text = "Low";
+			}
+
+			target.html(
+			'<div class="panel"><div class="panel-body">' +
+			priority_text + ' priority tasks goes here!' +
+			'</div></div>'
+			);
+		}
 
 		function triggerUpdate(){
 			$("#task_title").removeAttr("readonly")
