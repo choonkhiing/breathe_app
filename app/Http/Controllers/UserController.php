@@ -45,7 +45,8 @@ class UserController extends Controller
 
 	public function dashboard()
 	{
-		$tasks = Task::where("start_date", "<=", Carbon::now()->toDateTimeString())
+		$tasks = Task::whereDate("start_date", "<=", Carbon::today())
+		->whereDate("due_date", ">=", Carbon::today())
 		->where("status", 0)->orderBy("due_date", "ASC")
 		->orderBy("priority", "DESC")
 		->get();
@@ -68,9 +69,12 @@ class UserController extends Controller
         		$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
         	}
         	else {
-        		if ($setting->max_hour - $used_hour >= 0) { //Add some tasks to today if there is time
-        			$todayTasks->push($task);
-        			$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
+        		if ($task->start_date->format('Y-m-d') <= Carbon::today()->format('Y-m-d')) {
+        			if ($setting->max_hour - ($used_hour + $task->min_duration) >= 0) { 
+        				//Add some 	tasks to today if there is time
+        				$todayTasks->push($task);
+        				$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
+        			}
         		}
         		else {
         			$upcomingTasks->push($task);
@@ -78,54 +82,71 @@ class UserController extends Controller
         	}
         }
 
+        $tasks = Task::whereDate("start_date", ">", Carbon::today())
+		->whereDate("due_date", ">=", Carbon::today())
+		->where("status", 0)->orderBy("due_date", "ASC")
+        ->orderBy("priority", "DESC")
+        ->get();
+        foreach ($tasks AS $task) {
+        	//Prioritize on due date 
+        	if ($task->due_date->isToday()) {
+        		$todayTasks->push($task);	
+        		$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
+        	}
+        	else {
+        		$upcomingTasks->push($task);
+        	}
+        }
+
+
         $stressLevel = $this->calStressLevel($used_hour, $setting->max_hour);
 
 		$todayTasks = $todayTasks->groupBy("priority");
 		$upcomingTasks = $upcomingTasks->groupBy("priority");
 
-        return view("user/dashboard", compact("todayTasks", "upcomingTasks", "stressLevel", "setting", "cls"));
-    }
+		return view("user/dashboard", compact("todayTasks", "upcomingTasks", "used_hour", "stressLevel", "cls", "setting"));
+		}
 
-    public function profile()
-    {	
-    	$user = User::find(Auth::user()->id);
-    	return view("user/profile", compact("user"));
-    }
+	public function profile()
+	{	
+		$user = User::find(Auth::user()->id);
+		return view("user/profile", compact("user"));
+	}
 
-    public function editProfile(Request $request)
-    {	
-    	try
-    	{
-    		$user = User::findOrFail($request->user_id);
-    		$user->name = $request->name;
-    		$user->phone = $request->phone;
+	public function editProfile(Request $request)
+	{	
+		try
+		{
+			$user = User::findOrFail($request->user_id);
+			$user->name = $request->name;
+			$user->phone = $request->phone;
 
-    		$image = $request->file('avatar');
+			$image = $request->file('avatar');
 
-    		if($image != null) {
-    			$extension = $image->extension();
-    			if ($extension == "jpeg") {
-    				$extension = "jpg";
-    			}
+			if($image != null) {
+                $extension = $image->extension();
+               	if ($extension == "jpeg") {
+               		$extension = "jpg";
+               	}
+            
+                $date = Carbon::now()->format('YmdHis');
+                Storage::disk('public')->put($date.'.'.$extension, File::get($image));
+                $user->profile_pic = '/img/uploads/profile/'.$date.'.'.$extension;
+            }
 
-    			$date = Carbon::now()->format('YmdHis');
-    			Storage::disk('public')->put($date.'.'.$extension, File::get($image));
-    			$user->profile_pic = '/img/uploads/profile/'.$date.'.'.$extension;
-    		}
+			$user->save();
+			Auth::user()->name = $user->name;
+			Auth::user()->phone = $user->phone;
+			Auth::user()->profile_pic = $user->profile_pic;
 
-    		$user->save();
-    		Auth::user()->name = $user->name;
-    		Auth::user()->phone = $user->phone;
-    		Auth::user()->profile_pic = $user->profile_pic;
-
-    		Session::flash("success", "Profile details is updated!");
-    		return redirect('/profile');
-    	}
-    	catch (\Exception $e) {
-    		Session::flash("error", $e->getMessage());
-    		return redirect::back();
-    	}
-    }
+			Session::flash("success", "Profile details is updated!");
+			return redirect('/profile');
+		}
+		catch (\Exception $e) {
+			Session::flash("error", $e->getMessage());
+			return redirect::back();
+		}
+	}
 
     public function register(Request $request)
     {
@@ -171,16 +192,16 @@ class UserController extends Controller
     	return redirect::route("login");
     }
 
-    public function calStressLevel($used_hour, $max_hour) {
-    	if ($max_hour == 0) {
-    		$stressLevel = 0;
-    	}
-    	else {
-    		$stressLevel = $used_hour / $max_hour * 100;
-    	}
 
-
-    	return ceil($stressLevel);
+	public function calStressLevel($used_hour, $max_hour) {
+		if ($max_hour == 0) {
+			$stressLevel = 0;
+		}
+		else {
+			$stressLevel = $used_hour / $max_hour * 100;
+		}
+		
+		return ceil($stressLevel);
     }
 
     public function testReminder()
@@ -232,4 +253,7 @@ class UserController extends Controller
     		}
     	}
     }
+
+
+
 }
