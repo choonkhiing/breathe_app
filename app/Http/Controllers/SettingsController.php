@@ -32,7 +32,7 @@ class SettingsController extends Controller
         	$setting->day_before_remind = $request->day_before_remind;
         	$setting->save();
 
-        	Session::flash("success", "Maximum hour/day updated!");
+        	Session::flash("success", "Setting updated!");
         	return redirect::back();
         }
         catch (\Exception $e) {

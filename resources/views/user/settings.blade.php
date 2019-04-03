@@ -45,9 +45,7 @@
 			<script type="text/javascript">
 				$(function(){
 					$('#datetimepicker').datetimepicker({
-						format: "d/M/Y HH:mm",
-						minDate	: new Date(),
-						date: "{{$setting->reminder_time}}"
+						format: "HH:mm",
 					});
 				});
 			</script>
