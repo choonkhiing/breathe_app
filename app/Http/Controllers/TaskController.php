@@ -51,7 +51,6 @@ class TaskController extends Controller
             $task->title = $request->title;
             $task->description = $request->description;
             $task->priority = $request->priority;
-            $task->min_duration = $request->min_duration;
 
             //Parse date accepted from front-end to MySQL acceptable date format
             $task->start_date = ($request->startdate) ? Carbon::createFromFormat('d/m/Y', $request->startdate) : null; 
@@ -62,6 +61,14 @@ class TaskController extends Controller
             $task->collection_id = $request->collection_id;
 
             $task->save();
+
+            if ($request->reminderCheckbox == "on") {
+                $setting = new Setting();
+                $setting->task_id = $task->id;
+                $setting->reminder_time = $request->reminder_time;
+                $setting->day_before_remind = $request->day_before_remind;
+                $setting->save();
+            }
 
             $this::successMessage("New task added!");
         } catch (\Exception $e) {
@@ -79,14 +86,15 @@ class TaskController extends Controller
     public function show($id)
     {
         try {
-            $task = Task::find($id);
+            $task = Task::with("settings")->find($id);
             $task->shortStartDate = optional($task->start_date)->format('d/m/Y');
             $task->shortDueDate = optional($task->due_date)->format('d/m/Y');
 
-            $settings =  Setting::where("user_id", $task->user_id)->first();
-
-            // Calculate how many % of stress current task
-            $task->weightage = $this::calStressLevel($task->min_duration, $settings->max_hour);
+            foreach (Task::TASK_PRIORITY_LEVEL AS $key => $percentage) {
+                if ($key == $task->priority) {
+                    $task->weightage = $percentage;
+                }
+           }
 
             return response()->json(['success' => true, 'data' => $task]);
         } catch (Exception $e) {
@@ -119,7 +127,6 @@ class TaskController extends Controller
             $task->title = $request->title;
             $task->description = $request->description;
             $task->priority = $request->priority;
-            $task->min_duration = $request->min_duration;
 
             //Parse date accepted from front-end to MySQL acceptable date format
             $task->start_date = ($request->startdate) ? Carbon::createFromFormat('d/m/Y', $request->startdate) : null; 
@@ -131,13 +138,29 @@ class TaskController extends Controller
 
             $task->save();
 
+            if ($request->reminderCheckbox == "on") {
+                if (Setting::where("task_id", $task->id)->count() > 0) {
+                    $setting = Setting::where("task_id", $task->id)->first();
+                    $setting->reminder_time = $request->reminder_time;
+                    $setting->day_before_remind = $request->day_before_remind;
+                    $setting->save();
+                }
+                else {
+                    $setting = new Setting();
+                    $setting->task_id = $task->id;
+                    $setting->reminder_time = $request->reminder_time;
+                    $setting->day_before_remind = $request->day_before_remind;
+                    $setting->save();
+                }
+            }
+
             $this::successMessage("Task updated!");
             return redirect::back();
         } catch (Exception $e) {
-             $this::errorMessage($e->getMessage());
-            return redirect::back();
-        }
-    }
+         $this::errorMessage($e->getMessage());
+         return redirect::back();
+     }
+ }
 
     /**
      * Remove the specified resource from storage.

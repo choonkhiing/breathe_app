@@ -21,7 +21,17 @@ class Task extends Model
     	"3" => "label-green"
     ];
 
+    const TASK_PRIORITY_LEVEL = [
+        "1" => 33.33,
+        "2" => 20,
+        "3" => 12.5
+    ];
+
     public function getCollection(){
         return $this->hasOne('App\Collection', 'id', 'collection_id');
+    }
+
+    public function settings(){
+        return $this->hasOne('App\Setting', 'task_id', 'id');
     }
 }

@@ -6,23 +6,23 @@
 
 <div class="stressLevelBar">
 	<div class="progress rounded-corner">
-		@if ($stressLevel == 0) 
-		<div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%">
-		@elseif ($stressLevel >= 0 && $stressLevel < 25) 
-		<div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
-		@elseif ($stressLevel >= 25 && $stressLevel < 50)
-		<div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
-		@elseif ($stressLevel >= 50 && $stressLevel < 75)
-		<div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
-		@elseif ($stressLevel >= 75)
-		<div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" style="width: {{ $stressLevel }}%">
+		@if ($organizedTasks->stressLevel == 0) 
+		<div class="progress-bar bg-green progress-bar-striped progress-bar-animated" style="width: 100%">
+		@elseif ($organizedTasks->stressLevel >= 0 && $organizedTasks->stressLevel < 25) 
+		<div class="progress-bar bg-green progress-bar-striped progress-bar-animated" style="width: {{ $organizedTasks->stressLevel }}%">
+		@elseif ($organizedTasks->stressLevel >= 25 && $organizedTasks->stressLevel < 50) 
+		<div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: {{ $organizedTasks->stressLevel }}%">
+		@elseif ($organizedTasks->stressLevel >= 50 && $organizedTasks->stressLevel < 75)
+		<div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: {{ $organizedTasks->stressLevel }}%">
+		@elseif ($organizedTasks->stressLevel >= 75 && $organizedTasks->stressLevel < 100)
+		<div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: {{ $organizedTasks->stressLevel }}%">
+		@elseif ($organizedTasks->stressLevel >= 100)
+		<div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" style="width: {{ $organizedTasks->stressLevel }}%">
 		@endif 
-		{{ $stressLevel }}% Stress Level
+		{{ $organizedTasks->stressLevel }}% Stress Level
 		</div>
 	</div>
 </div>
-
-<h3>Today: {{ $setting->max_hour }} hour(s) per day.</h3>
 
 <ul class="nav nav-pills">
 	<li class="nav-items">
@@ -38,15 +38,15 @@
 		</a>
 	</li>
 </ul>
-
+<h3>Today</h3>
 <div class="tab-content p-0 bg-transparent">
 	<!-- begin tab-pane -->
 	<div class="tab-pane fade active show" id="nav-pills-tab-1">
 		<div class="task-list row">
 			@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
-			@if(!empty($todayTasks[$key]))
+			@if(!empty($organizedTasks->todayTasks[$key]))
 			<div class="col-md-4" data-priority="{{ $key }}">
-				@foreach($todayTasks[$key] AS $task)
+				@foreach($organizedTasks->todayTasks[$key] AS $task)
 				<div class="panel task-panel" data-task-id="{{ $task->id }}">
 					<div class="panel-body">
 						<strong class="f-s-13 task_title pull-left">
@@ -56,8 +56,6 @@
 						@if($task->getCollection)
 						<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
 						@endif
-						<br>
-						<strong class="f-s-13">Min. Duration: {{ $task->min_duration }} hours(s)</strong>
 					</div>
 					<div class="panel-footer clearfix">
 						@if($task->due_date->isToday())
@@ -97,8 +95,8 @@
 	<div class="tab-pane fade" id="nav-pills-tab-2">
 		<div class="task-list row"> 
 			@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
-			@if(!empty($completedTasks[$key]))
-			@foreach($completedTasks[$key] AS $task)
+			@if(!empty($organizedTasks->completedTasks[$key]))
+			@foreach($organizedTasks->completedTasks[$key] AS $task)
 			<div class="col-md-4" data-priority="{{ $key }}">
 				<div class="panel" data-task-id="{{ $task->id }}">
 					<div class="panel-body">
@@ -109,8 +107,6 @@
 						@if($task->getCollection)
 						<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
 						@endif
-						<br>
-						<strong class="f-s-13">Min. Duration: {{ $task->min_duration }} hours(s)</strong>
 					</div>
 					<div class="panel-footer clearfix">
 						@if($task->due_date->isToday())
@@ -141,9 +137,9 @@
 	<h3>Upcomings</h3>
 	<div class="task-list row">
 		@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
-		@if(!empty($upcomingTasks[$key]))
+		@if(!empty($organizedTasks->upcomingTasks[$key]))
 		<div class="col-md-4">
-			@foreach($upcomingTasks[$key] AS $task)
+			@foreach($organizedTasks->upcomingTasks[$key] AS $task)
 			<div class="panel task-panel" data-task-id="{{ $task->id }}">
 				<div class="panel-body">
 					<strong class="f-s-13 task_title pull-left">
@@ -187,7 +183,6 @@
 			<div class="modal-content pop-up">
 				<form id="formTask" autocomplete="off" action="{{ action('TaskController@store') }}" method="POST" class="pop-up-box" data-parsley-validate>
 					@csrf
-
 					<div class="panel mb-0">
 						<div class="panel-heading">
 							<h4 class="panel-title">Create new task</h4>
@@ -200,6 +195,14 @@
 							<div class="form-group">
 								<label class="title">Description (Optional)</label>
 								<textarea rows="4" name="description" class="form-control form-control-lg" placeholder="Enter Task Description"></textarea>
+							</div>
+							<div class="form-group">
+								<label class="title">Priority</label>
+								<select name="priority" data-parsley-required="true" class="form-control form-control-lg">
+									<option value="3">Low</option>
+									<option value="2">Medium</option>
+									<option value="1">High</option>
+								</select>
 							</div>
 							<div class="row">
 								<div class="col-md-6">
@@ -215,21 +218,23 @@
 									</div>
 								</div>
 							</div>
-							<div class="row">
-								<div class="col-md-6">
+							<div class="form-group">
+								<div class="form-check">
+  									<input type="checkbox" name="reminderCheckbox" class="form-check-input" id="reminderCheckbox" />
+  									<label class="form-check-label" for="reminderCheckbox">Set Reminder?<label>
+  								</div>
+							</div>
+							<div class="row" id="reminderRow"> 
+								<div class="col-md-6 d-none">
 									<div class="form-group">
-										<label class="title">Min. Duration</label>
-										<input id="min_input" name="min_duration" data-parsley-required="true" data-parsley-type="integer" placeholder="Min. Duration" class="form-control form-control-lg">
+										<label class="reminder_time">Reminder Time</label>
+										<input name="reminder_time" type="text" id="datetimepicker" class="form-control form-control-lg" data-parsley-requiredoncheckbox="reminderCheckbox" placeholder="Select Reminder Time">
 									</div>
 								</div>
-								<div class="col-md-6">
+								<div class="col-md-6 d-none">
 									<div class="form-group">
-										<label class="title">Priority</label>
-										<select name="priority" data-parsley-required="true" class="form-control form-control-lg">
-											<option value="3">Low</option>
-											<option value="2">Medium</option>
-											<option value="1">High</option>
-										</select>
+										<label class="day_before_remind">Day Before Remind</label>
+										<input name="day_before_remind" type="text" class="form-control form-control-lg" placeholder="Enter Day" data-parsley-requiredoncheckbox="reminderCheckbox" data-parsley-type="digits">
 									</div>
 								</div>
 							</div>
@@ -391,31 +396,12 @@
 					}
 				})
 			});
-
-			var stresslvl = parseInt("{{ $used_hour }}");
-			var oldMinDuration = 0; 
-
+ 
+			var stressLevel = "{{ $organizedTasks->stressLevel }}";
 			$("#btn_submit").click(function(e){
-
-				var today = moment().format("DD/MM/YYYY");
-				var min = parseInt($("#min_input").val());						
-				var max = "{{ $setting->max_hour }}";
-				var taskDate = $("#start_date").datepicker("getDate");
-				taskDate = moment(taskDate).format("DD/MM/YYYY");
-				var newMin = stresslvl - oldMinDuration;
-				var leftHour = max - newMin;
-				newMin += min;
 				var hourOutput = "Please dont overload yourself with too many tasks, are you sure you want to continue add task?";
 
-				if (leftHour>0){
-					hourOutput="You have only " +leftHour + " hour(s) left for today. <br/>" + hourOutput;
-				}
-				else{
-					hourOutput="You have exceeded " +max+" hours of works for today."+hourOutput; 
-				}
-
-
-				if( taskDate == today && newMin > max){
+				if(parseFloat(stressLevel)+12.5 > 100){
 					Swal.fire({
 						title: 'Stress Overload',
 						html: hourOutput,
@@ -436,8 +422,6 @@
 				}
 			});
 
-
-
 			function triggerUpdate(){
 				$("#task_title").removeAttr("readonly")
 				.addClass("form-control-plaintext");
@@ -446,18 +430,19 @@
 				$("#btngroup-show").show();
 			}
 
-			var stressLvl = "{{ $stressLevel }}";
+			var stressLvl = "{{ $organizedTasks->stressLevel }}";
 
 			$("#btn_completetask").click(function(){
 				var task_id = $(this).closest("form").find("#task_id").val();
 				var elem = $("div[data-task-id='" + task_id + "']");
 				var url = "/tasks/" + task_id;
 				$.get(url, function(response){
-					console.log(response);
 					var data = response.data;
-					var weightage = data.weightage;
+					var weightage = data.weightage;					
 					stressLvl = parseInt(stressLvl) - weightage;
 
+					console.log(weightage);
+					console.log(stressLvl);
 					$.ajax({
 						type: "POST",
 						url: "/task/completetask/" + task_id,
@@ -465,7 +450,6 @@
 					}).done(function(response){
 
 						if(response.success){
-							alert(data.priority);
 							var target_elem = $("div[data-priority='" + data.priority + "']");
 							$("#taskDetail").modal("hide");
 							elem.remove();
@@ -484,12 +468,15 @@
 			});
 
 			function updateBar(stress_lvl){
-				var cssClass = "bg-success";
-				if(stress_lvl >= 25 && stress_lvl < 50) {
-					cssClass = "bg-info";
+				var cssClass = "bg-green";
+				if (stress_lvl >= 25 && stress_lvl < 50) {
+					cssClass = "bg-success";
 				} else if(stress_lvl >= 50 && stress_lvl < 75) {
+					cssClass = "bg-info";
+				} else if(stress_lvl >= 75  && stress_lvl < 100) {
 					cssClass = "bg-warning";
-				} else if(stress_lvl >= 75) {
+				}
+				else if (stressLevel >= 100) {
 					cssClass = "bg-danger";
 				}
 
@@ -543,9 +530,6 @@
 				var modal = $("#exampleModalCenter");
 
 				if(taskobj != null){
-
-					oldMinDuration = taskobj.min_duration;
-
 					$("#taskDetail").modal("toggle");
 					modal.find(".panel-title").text("Edit Task");
 					modal.find("input[name='title']").val(taskobj.title);
@@ -555,12 +539,25 @@
 					modal.find("input[name='min_duration']").val(taskobj.min_duration);
 					modal.find("select[name='priority']").val(taskobj.priority);
 					modal.find("select[name='collection_id']").val(taskobj.collection_id);
+
+					if (taskobj.settings) {
+						$("#reminderCheckbox").prop("checked", true);
+						$('[name="day_before_remind"]').prop('required',true);
+   						$('[name="reminder_time"]').prop('required',true);
+   						$('#reminderRow .col-md-6').removeClass('d-none');
+						modal.find("input[name='day_before_remind']").val(taskobj.settings.day_before_remind);
+						modal.find("input[name='reminder_time']").val(taskobj.settings.reminder_time);
+					}
+					else {
+						$("#reminderCheckbox").prop("checked", false);
+						$('[name="day_before_remind"]').prop('required',false);
+   						$('[name="reminder_time"]').prop('required',false);
+   						$('#reminderRow .col-md-6').addClass('d-none');
+					}
+
 					modal.find("form").attr("action", "/tasks/" + taskobj.id).append('<input type="hidden" name="_method" value="PUT">');
 					modal.find("#btn_submit").text("Update Task");
 				} else {
-
-					oldMinDuration = 0;
-
 					modal.find("input[name='_method']").remove();
 					modal.find("form").attr("action", "/tasks/").attr("method", "POST").trigger("reset");
 					modal.find("#btn_submit").text("Create Task");
@@ -568,6 +565,27 @@
 
 				modal.modal("toggle");
 			}
+		});
+
+		$(function(){
+			$('#datetimepicker').datetimepicker({
+				format: "HH:mm",
+			});
+		});
+
+
+		//if checkbox is checked, then the settings are required
+        $("#reminderCheckbox").click( function(){
+   			if( $(this).is(':checked') ) {
+   				$('[name="day_before_remind"]').prop('required',true);
+   				$('[name="reminder_time"]').prop('required',true);
+   				$('#reminderRow .col-md-6').removeClass('d-none');
+   			}
+   			else {
+   				$('[name="day_before_remind"]').prop('required',false);
+   				$('[name="reminder_time"]').prop('required',false);
+   				$('#reminderRow .col-md-6').addClass('d-none');
+   			}
 		});
 	</script>
 	@stop

@@ -45,73 +45,15 @@ class UserController extends Controller
 
 	public function dashboard()
 	{
-		
-
-		$completedTasks = Task::whereDate("start_date", Carbon::now()->toDateString())
-		->where("status", 1)->orderBy("due_date", "ASC")
-		->orderBy("priority", "DESC")
-		->get();
-
-        //User setting
-		$setting = Setting::where("user_id", Auth::user()->id)->first();
-		$used_hour = 0;
-
 		$cls = Collection::where("user_id", \Auth::user()->id)->get();
 
-     $tasks = Task::whereDate("start_date", "<=", Carbon::today())
-        ->whereDate("due_date", ">=", Carbon::today())
-        ->where("status", 0)->orderBy("due_date", "ASC")
-        ->orderBy("priority", "DESC")
-        ->get();
+        $tasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
+           ->orderBy("due_date", "ASC")
+           ->orderBy("priority", "DESC");
 
-		$todayTasks = collect(new Task);
-		$upcomingTasks = collect(new Task);
+        $organizedTasks = $this::organizeTasks($tasks);
 
-        //Split the tasks into today's and upcoming's task(s)
-		foreach ($tasks AS $task) {
-        	//Prioritize on due date 
-			if ($task->due_date->isToday()) {
-				$todayTasks->push($task);	
-        		$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
-        	}
-        	else {
-        		if ($task->start_date->format('Y-m-d') <= Carbon::today()->format('Y-m-d')) {
-        			if ($setting->max_hour - ($used_hour + $task->min_duration) >= 0) { 
-        				//Add some 	tasks to today if there is time
-        				$todayTasks->push($task);
-        				$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
-        			}
-        		}
-        		else {
-        			$upcomingTasks->push($task);
-        		}
-        	}
-        }
-
-        $stressLevel = $this::calStressLevel($used_hour, $setting->max_hour);
-
-        $tasks = Task::whereDate("start_date", ">", Carbon::today())
-        ->whereDate("due_date", ">=", Carbon::today())
-        ->where("status", 0)->orderBy("due_date", "ASC")
-        ->orderBy("priority", "DESC")
-        ->get();
-       
-
-        foreach ($tasks AS $task) {
-        	//Prioritize on due date 
-        	if ($task->due_date->isToday()) {
-        		$todayTasks->push($task);	
-        		$used_hour = $used_hour + $task->min_duration; //See how many hours left for today
-        	}
-        	else {
-        		$upcomingTasks->push($task);
-        	}
-        }
-        $todayTasks = $todayTasks->groupBy("priority");
-        $upcomingTasks = $upcomingTasks->groupBy("priority");
-        $completedTasks = $completedTasks->groupBy("priority");
-
-        return view("user/dashboard", compact("todayTasks", "completedTasks", "used_hour", "upcomingTasks", "stressLevel", "setting", "cls"));
+        return view("user/dashboard", compact("organizedTasks", "cls"));
     }
 
     public function profile()
@@ -171,11 +113,6 @@ class UserController extends Controller
     			$user->password = bcrypt($request->password);
     			$user->phone = $request->phone;
     			$user->save();
-
-				//Save settings
-    			$setting = new Setting();
-    			$setting->user_id = $new_user->id;
-    			$setting->save();
 
     			if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
    		 			// The user is active, not suspended, and exists.

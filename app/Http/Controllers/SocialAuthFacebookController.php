@@ -9,7 +9,6 @@ use Redirect;
 use File;
 use Auth;
 use \App\User;
-use \App\Setting;
 
 class SocialAuthFacebookController extends Controller
 {
@@ -70,11 +69,6 @@ class SocialAuthFacebookController extends Controller
                 $new_user->profile_pic = ('img/uploads/profile/' . $user->getId() . ".jpg");
 
                 $new_user->save();
-
-                //Save settings
-                $setting = new Setting();
-                $setting->user_id = $new_user->id;
-                $setting->save();
 
                 auth()->login($new_user);
                 return redirect('/dashboard');

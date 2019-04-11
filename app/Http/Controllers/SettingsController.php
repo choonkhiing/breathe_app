@@ -18,19 +18,18 @@ class SettingsController extends Controller
 {
 	public function showSettings()
 	{
-		$setting = Setting::where('user_id',Auth::user()->id)->first();
-		return view("/user/settings", compact("setting"));
+		// $setting = Setting::where('user_id',Auth::user()->id)->first();
+		return view("/user/settings");
 	}
 
 	public function saveSettings(Request $request)
     {
     	try
 		{
-			$setting = Setting::where('user_id',Auth::user()->id)->first();
-        	$setting->max_hour = $request->max_hour;
-        	$setting->reminder_time = $request->reminder_time;
-        	$setting->day_before_remind = $request->day_before_remind;
-        	$setting->save();
+			// $setting = Setting::where('task_id',1)->first();
+   //      	$setting->reminder_time = $request->reminder_time;
+   //      	$setting->day_before_remind = $request->day_before_remind;
+   //      	$setting->save();
 
         	Session::flash("success", "Setting updated!");
         	return redirect::back();
