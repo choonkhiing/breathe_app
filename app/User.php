@@ -27,4 +27,16 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function getStatus(){
+        if($this->status == 1){
+            $class = "badge-success";
+            $status = "active";
+        } else {
+            $class = "badge-warning";
+            $status = "deactivated";
+        }
+
+        return '<span class="badge ' . $class . '">' . $status . '</span>';
+    }
 }

@@ -38,5 +38,9 @@ Route::middleware(['auth'])->group(function () {
 	Route::resource('tasks', 'TaskController');
 	Route::post('/task/completetask/{id}', 'TaskController@completeTask');
 	Route::resource('collections', 'CollectionController');
+
+	Route::post('/processInvitation', 'UserController@processInvitation');
 });
+
+Route::get('/admin/users', 'AdminController@users');
 

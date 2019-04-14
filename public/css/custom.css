@@ -262,4 +262,7 @@ button.logout_btn {
     margin-bottom: 25px;
 }
 
+.nowrap{
+  white-space: nowrap;
+}
 /*Checkbox*/

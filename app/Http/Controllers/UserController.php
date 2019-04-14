@@ -17,6 +17,7 @@ use \App\User;
 use \App\Task;
 use \App\Collection;
 use \App\Setting;
+use \App\GroupInvitation;
 
 class UserController extends Controller
 {
@@ -48,8 +49,8 @@ class UserController extends Controller
 		$cls = Collection::where("user_id", \Auth::user()->id)->get();
 
         $tasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
-           ->orderBy("due_date", "ASC")
-           ->orderBy("priority", "DESC");
+        ->orderBy("due_date", "ASC")
+        ->orderBy("priority", "DESC");
 
         $organizedTasks = $this::organizeTasks($tasks);
 
@@ -184,6 +185,70 @@ class UserController extends Controller
     			} 		
     		}
     	}
+    }
+
+    public function inviteUser($user_id, $group_id)
+    {
+        try {
+            $inv = new GroupInvitation();
+            $inv->inviter = Auth::user()->id;
+            $inv->invitee = $user_id;
+            $inv->group_id = $group_id;
+            $inv->save();
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function processInvitation($action, $group_id)
+    {
+        try {
+            switch($action){
+                case "approve":
+                $status = 1;
+                break;
+                case "reject":
+                $status = 0;
+                break;
+                default:
+                throw new \Exception('Invalid action');
+                break;
+            }
+
+            $inv = GroupInvitation::find($group_id);
+            $inv->status = $status;
+            $inv->save();
+
+            // Adds user into group
+            if($status == 1){
+                $grp = new GroupDetail();
+                $grp->group_id = $group_id;
+                $grp->user_id = Auth::user()->id;
+                $grp->save();
+
+                $msg = "Successfully approved invitation";
+            } else {
+                $msg = "Successfully rejected invitation.";
+            }
+
+            return response()->json(['success' => true, 'msg' => $msg]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function removeUser(Request $request)
+    {
+        try {
+            $grp = GroupDetail::where("group_id", $request->group_id)->where("user_id", $request->user_id)->first();
+            $grp->remove();
+
+            $this::successMessage("Successfully removed member from group.");
+        } catch (\Exception $e) {
+            $this::errorMessage($e->getMessage());
+        }
     }
 
 }
