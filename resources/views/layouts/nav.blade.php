@@ -104,7 +104,7 @@
 						</a>
 					</li> -->
 					<li>
-						<a href="widget.html">
+						<a href="/groups">
 							<i class="fas fa-users"></i> 
 							<span>Groups</span> 
 						</a>

@@ -38,6 +38,10 @@ Route::middleware(['auth'])->group(function () {
 	Route::get('/settings', 'SettingsController@showSettings');
 	Route::post('/settings/save', 'SettingsController@saveSettings');
 	Route::post('/profile/edit', 'UserController@editProfile');
+
+	Route::resource('groups', 'GroupsController');
+	Route::get('/groups', 'GroupsController@showGroups');
+	
 	//Route::post('/profile/edit', 'UserController@profileEdit');
 	Route::resource('tasks', 'TaskController');
 	Route::post('/task/completetask/{id}', 'TaskController@completeTask');
