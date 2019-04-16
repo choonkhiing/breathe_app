@@ -19,6 +19,8 @@
 	<link href="/assets/css/default/style.min.css" rel="stylesheet" />
 	<link href="/assets/css/default/style-responsive.min.css" rel="stylesheet" />
 	<link href="/css/custom.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/remodal/1.1.1/remodal.min.css" rel="stylesheet" >
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/remodal/1.1.1/remodal-default-theme.min.css" rel="stylesheet" >
 	<!-- ================== END BASE CSS STYLE ================== -->
 	
 	<!-- ================== BEGIN BASE JS ================== -->
@@ -72,17 +74,14 @@
 						<div class="form-group m-b-20">
 							<input type="password" class="form-control form-control-lg" placeholder="Password" name="password" data-parsley-required="true" />
 						</div>
-						<div class="checkbox checkbox-css m-b-20">
-							<input type="checkbox" id="remember_checkbox" /> 
-							<label for="remember_checkbox">
-								Remember Me
-							</label>
-						</div>
 						<div class="login-buttons">
 							<button type="submit" class="btn btn-success btn-block btn-lg">Sign me in</button>
 						</div>
 						<div class="m-t-20">
 							Not a member yet? Click <a href="/register">here</a> to register.
+						</div>
+						<div class="m-t-10 text-inverse">
+							<a href="javascript:;" data-remodal-target="forgot-password-tab">Forgot Your Password?</a>
 						</div>
 						<hr class="hr-text mb-1" data-content="OR">
 						<a href="/fb/redirect" class="btn btn-block fb-button mb-1"><i class="fab fa-facebook"></i> Login with Facebook</a>
@@ -94,6 +93,28 @@
 			<!-- end right-container -->
 		</div>
 		<!-- end login -->
+
+		<div class="remodal" data-remodal-id="forgot-password-tab">
+			<button data-remodal-action="close" class="remodal-close"></button>
+			<h2 class="remodal-header">Forgot Password</h2>
+			<div class="remodal-content-wrapper">
+				<form method="post" id="forgetPasswordForm" data-parsley-validate="true" class="margin-bottom-0">
+					{{ csrf_field() }}
+					<div class="form-group">
+						<div class="isa_error alert alert-danger" id="forgotpwErrorDiv" style="display:none"></div>
+					</div>
+					<div class="form-group m-b-15">
+						<input type="text" class="form-control form-control-lg" name="email" id="forgot-email"  placeholder="Email Address" data-parsley-trigger="change" data-parsley-required="true" data-parsley-type="email" />
+					</div>
+					<div class="login-buttons">
+						<button type="submit" class="btn btn-success btn-block btn-lg" onclick="sendForgetPasswordEmail()" id="forgotPasswordBtn">Forgot Password</button>
+					</div>
+					<div class="loader">
+						<img src="/img/loader.gif" />
+					</div>
+				</form>
+			</div>
+		</div>
 
 	</div>
 	<!-- end page container -->
@@ -113,6 +134,7 @@
 	<script src="/assets/js/apps.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.8.1/parsley.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/remodal/1.1.1/remodal.min.js"></script>	
 	
 	<!-- ================== END BASE JS ================== -->
 	
@@ -121,6 +143,7 @@
 	<!-- ================== END PAGE LEVEL JS ================== -->
 
 	<script>
+		$(".loader").hide();
 		$(document).ready(function() {
 			App.init();
 
@@ -132,6 +155,44 @@
 			swal("{{ Session::get('error-title') }}", "{{ Session::get('error') }}", "error");
 			@endif
 		});
+
+		function sendForgetPasswordEmail()
+		{
+			$('#forgetPasswordForm').parsley().on('field:validated', function()
+			{
+				var ok = $('.parsley-error').length === 0;
+				$('.bs-callout-info').toggleClass('hidden', !ok);
+				$('.bs-callout-warning').toggleClass('hidden', ok);
+			}).on('form:submit', function(e)
+			{
+				$.ajax({
+					url: "/forgot-password",
+					type: 'POST',
+					data: $('#forgetPasswordForm').serialize(),
+					beforeSend: function() {
+						$("#forgotpwErrorDiv").css('display','none');
+						$("#forgotPasswordBtn").css('display','none');
+						$(".loader").show();
+					},
+					success: function (data) 
+					{
+						$("#forgotPasswordBtn").css('display','block');
+						$(".loader").hide();
+						if (data.error != null)
+						{
+							$("#forgotpwErrorDiv").css('display','block');
+							$("#forgotpwErrorDiv").text(data.error);
+						}
+						else
+						{
+							swal("Success", data.success, "success");
+						}
+					}
+				});
+				return false;
+			});
+		}
+		
 	</script>
 </body>
 </html>

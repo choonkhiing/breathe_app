@@ -19,6 +19,7 @@
 	<link href="/css/animate.css" rel="stylesheet" />
 	<link href="/css/custom.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/remodal/1.1.1/remodal-default-theme.min.css" rel="stylesheet" >
 
 	<link href="/css/bootstrap-datepicker.min.css" rel="stylesheet">
 	<link href="/css/bootstrap-datepicker3.min.css" rel="stylesheet">
@@ -181,7 +182,9 @@
 	<script src="/js/js.cookie.js"></script>
 	<script src="/js/parsley.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js">
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/remodal/1.1.1/remodal.min.js"></script>	
 	
 	
 	<!--[if lt IE 9]>

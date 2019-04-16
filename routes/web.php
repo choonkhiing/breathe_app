@@ -28,6 +28,10 @@ Route::get('/fb/callback', 'SocialAuthFacebookController@callback');
 Route::get('/google/redirect', 'GoogleController@redirect');
 Route::get('/google/callback', 'GoogleController@callback');
 
+Route::post('/forgot-password', 'UserController@forgotPassword');
+Route::get('/reset-password/{token}', 'UserController@showResetPassword');
+Route::post('/reset-password', 'UserController@resetPassword');
+
 Route::middleware(['auth'])->group(function () {
 	Route::get('/dashboard', 'UserController@dashboard');
 	Route::get('/profile', 'UserController@profile');

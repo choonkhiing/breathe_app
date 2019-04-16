@@ -18,6 +18,7 @@ use \App\Task;
 use \App\Collection;
 use \App\Setting;
 use \App\GroupInvitation;
+use \App\ResetPassword;
 
 class UserController extends Controller
 {
@@ -173,7 +174,7 @@ class UserController extends Controller
     					$beautymail->send('emails.reminder', ['user' => $user, 'tasks' => $remindTasks], function($message) use ($user)
     					{
     						$message
-    						->from('admin@pmxglobal.com.my', 'Breathe')
+    						->from('ckooi@geekycs.com', 'Breathe')
     						->to($user->email, $user->name)
     						->subject('Breathe Reminder');
     					});
@@ -251,4 +252,100 @@ class UserController extends Controller
         }
     }
 
+    public function forgotPassword(Request $request)
+    {
+        try {  
+            if(DB::table('users')->where('email', $request->email)->count()) {
+                $random_string = $this->randString(10);
+                $is_unique = false;
+
+                while (!$is_unique) {
+                    if(DB::table('reset_password')->where('token', $random_string)->count()) {
+                        $random_string = $this->randString(10);
+                    }
+                    else {
+                        $is_unique = true;
+                        $reset_password = new ResetPassword();
+                        $reset_password->email = $request->email;
+                        $reset_password->token = $random_string;
+                        $reset_password->save();
+
+                        try {
+                            $beautymail = app()->make(\Snowfire\Beautymail\Beautymail::class);
+                            $beautymail->send('emails.forgot-password', ['token' => $reset_password->token], function($message) use ($reset_password)
+                            {
+                                $message
+                                ->from('ckooi@geekycs.com', 'Breathe')
+                                ->to($reset_password->email)
+                                ->subject('Forgot Password?');
+                            });
+                            return response()->json(["success" => "Reset password has been sent to your email."]);
+                        }
+                        catch (\Exception $e)
+                        {
+                            return response()->json(["error"=>$e->getMessage()]);
+                        }
+                    }
+                }
+            }
+            else {
+                return response()->json(["error" => "Email not found!"]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(["error"=>$e->getMessage()]);
+        }
+    }
+
+    function randString($length, $charset='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') {
+        $str = '';
+        $count = strlen($charset);
+        while ($length--) {
+            $str .= $charset[mt_rand(0, $count-1)];
+        }
+        return $str; 
+    }
+
+    public function showResetPassword(Request $request, $token)
+    {    
+        try 
+        {
+            $isExpired = true;
+            $reset_password = "";
+            $reset_password = DB::table('reset_password')->where('token', $token)
+            ->where('created_at', '>=', Carbon::now()->subDays(1)->toDateTimeString())->orderBy('created_at', 'desc')->first();
+        
+            if ($reset_password === NULL || empty($reset_password)) {
+                $isExpired = true;
+                return view('reset-password', compact("reset_password", "isExpired"));
+            }
+            else {
+               $isExpired = false;
+                return view('reset-password', compact("reset_password", "isExpired", "token"));
+            }
+        }
+        catch (\Exception $e)
+        {
+            $isExpired = true;
+            return view('reset-password', compact("reset_password", "isExpired"));
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {    
+        try {  
+            $user = DB::SELECT("SELECT * FROM users AS u JOIN reset_password AS rp ON u.email = rp.email WHERE rp.token='".$request->token."' AND rp.created_at >='".Carbon::now()->subDays(1)->toDateTimeString()."'");
+    
+            if ($user === NULL || empty($user)) {
+                return response()->json(["success" => "The token has been expired! Please request again."]);
+            }
+            else {
+                DB::update("update users set password ='".bcrypt($request->password)."' WHERE email = '".$request->email."'");
+                Session::flash('success', "Your password has been updated.");
+                return response()->json(["success" => "Your password has been updated."]);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json(["success" => $e->getMessage()]);
+        }
+    }
 }

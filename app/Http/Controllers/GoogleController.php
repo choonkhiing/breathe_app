@@ -22,7 +22,7 @@ class GoogleController extends Controller
          try
         {
             $user = Socialite::driver("google")->stateless()->user();
-  
+            
             //if email is registered
             if(DB::table('users')->where('email', $user->email)->count())
             {
@@ -71,6 +71,7 @@ class GoogleController extends Controller
         }
         catch (\Exception $e)
         {
+            dd($e->getMessage());
             return redirect::back()->with("error", $e->getMessage());
         }
        

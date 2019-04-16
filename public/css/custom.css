@@ -265,4 +265,8 @@ button.logout_btn {
 .nowrap{
   white-space: nowrap;
 }
-/*Checkbox*/
+
+.loader img {
+    max-width: 25px;
+    margin-top: 5px;
+}
