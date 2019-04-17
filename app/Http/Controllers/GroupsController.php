@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use \App\User;
 use \App\Group;
+use \App\GroupMember;
 use Auth;
 use Session;
 use Carbon\Carbon;
@@ -30,8 +31,14 @@ class GroupsController extends Controller
             $group->title = $request->title;
             $group->description = $request->description ?? '';
             $group->created_by = Auth::user()->id;
-
             $group->save();
+
+            $group_member = new GroupMember();
+            $group_member->group_id = $group->id;
+            $group_member->user_id = Auth::user()->id;
+            $group_member->type = "admin";
+            $group_member->status = 1;
+            $group_member->save();
 
             $this::successMessage("New group added!");
         } catch (\Exception $e) {

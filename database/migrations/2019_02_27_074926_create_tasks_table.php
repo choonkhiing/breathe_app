@@ -23,7 +23,7 @@ class CreateTasksTable extends Migration
             $table->unsignedInteger('priority');
             $table->datetime('due_date')->nullable();
             $table->integer('status')->default('0');
-
+            $table->unsignedInteger('group_id')->default('0');
             $table->unsignedInteger('user_id');
             $table->timestamps();
 

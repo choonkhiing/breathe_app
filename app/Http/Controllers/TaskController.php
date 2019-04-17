@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use Redirect;
 use Auth;
 use Carbon\Carbon;
+use DB;
 
 use \App\Task;
 use \App\Setting;
+use \App\Collection;
+use \App\Group;
 
 class TaskController extends Controller
 {
@@ -17,15 +20,38 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::orderBy("due_date", "ASC")
-        ->orderBy("priority", "ASC")
-        ->get();
+        $datefilter = $request->query('datefilter');
+        
+        if ($request->query('groupid')) {
+            $group_id = $request->query('groupid');
+        }
+        else {
+            $group_id = $request->id;
+        }
 
-        $tasks = $tasks->groupBy("priority");
-
-        return view("user.tasks.index", compact("tasks"));
+        $cls = Collection::where("user_id", \Auth::user()->id)->get();
+        $organizedTasks = $this->organizeTasks($group_id, $datefilter);
+        $group = null;
+        //Check if group id exist or not
+        if ($group_id != 0 && $group_id != null) {
+            $group = DB::table('groups')
+            ->select('groups.*')
+            ->join('group_members', 'groups.id', '=', 'group_members.group_id')
+            ->where('groups.status', '=', 1)
+            ->where('group_members.status', '=', 1)
+            ->where('groups.id', '=', $group_id)
+            ->where('group_members.user_id', '=', Auth::user()->id)
+            ->first();
+     
+            if ($group == null) {
+                $this::errorMessage("Group not found!");
+                return redirect('/dashboard');
+            }
+        }
+        
+        return view("user/tasks/index", compact("organizedTasks", "cls", "group", "datefilter"));
     }
 
     /**
@@ -94,7 +120,7 @@ class TaskController extends Controller
                 if ($key == $task->priority) {
                     $task->weightage = $percentage;
                 }
-           }
+            }
 
             return response()->json(['success' => true, 'data' => $task]);
         } catch (Exception $e) {

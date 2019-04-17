@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Hash;
 
 use \App\User;
 use \App\Task;
+use \App\Group;
+use \App\GroupMember;
 use \App\Collection;
 use \App\Setting;
 use \App\GroupInvitation;
@@ -45,104 +47,85 @@ class UserController extends Controller
 		}
 	}
 
-	public function dashboard(Request $request)
-	{	
-		try{
-			$datefilter = $request->query('datefilter');
+	public function dashboard()
+	{  
+        $groups = DB::table('groups')
+                ->select('groups.*')
+                ->join('group_members', 'groups.id', '=', 'group_members.group_id')
+                ->where('groups.status', '=', 1)
+                ->where('group_members.status', '=', 1)
+                ->where('group_members.user_id', '=', Auth::user()->id)
+                ->get();
+  
+        $tasks = Task::whereDate("due_date", ">=", Carbon::today())
+        ->whereDate("start_date", "<=", Carbon::today())
+        ->where("status", 0)->get();
 
-			if ($datefilter == null){
-				$cls = Collection::where("user_id", \Auth::user()->id)->get();
 
-				$tasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
-				->orderBy("due_date", "ASC")
-				->orderBy("priority", "DESC");
+        $stressLevel = $this->calculateStressLevel($tasks);
 
-				$organizedTasks = $this::organizeTasks($tasks);
-			}
-			else{
-				$arr = explode(" - ", $datefilter, 2);
-				$fromDate = date("Y-m-d", strtotime($arr[0]));
-				$toDate = date("Y-m-d", strtotime($arr[1]));
+        return view("user/dashboard", compact("groups", "stressLevel"));
+    }
 
-				$cls = Collection::where("user_id", \Auth::user()->id)->get();
+    public function profile()
+    {	
+    	$user = User::find(Auth::user()->id);
+    	return view("user/profile", compact("user"));
+    }
 
-				$tasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
-				->whereDate("start_date", ">=", $fromDate)
-				->whereDate("start_date", "<=", $toDate)
-				->orderBy("due_date", "ASC")
-				->orderBy("priority", "DESC");
+    public function editProfile(Request $request)
+    {	
+    	try
+    	{
+    		$user = User::findOrFail($request->user_id);
+    		$user->name = $request->name;
+    		$user->phone = $request->phone;
 
-				$organizedTasks = $this::organizeTasks($tasks);
-			}
+    		$image = $request->file('avatar');
 
-			return view("user/dashboard", compact("organizedTasks", "cls"));
-		}
-		catch (\Exception $e) {
-			Session::flash("error", $e->getMessage());
-			return redirect::back();
-		}
-		
-	}
+    		if($image != null) {
+    			$extension = $image->extension();
+    			if ($extension == "jpeg") {
+    				$extension = "jpg";
+    			}
 
-	public function profile()
-	{	
-		$user = User::find(Auth::user()->id);
-		return view("user/profile", compact("user"));
-	}
+    			$date = Carbon::now()->format('YmdHis');
+    			Storage::disk('public')->put($date.'.'.$extension, File::get($image));
+    			$user->profile_pic = '/img/uploads/profile/'.$date.'.'.$extension;
+    		}
 
-	public function editProfile(Request $request)
-	{	
-		try
-		{
-			$user = User::findOrFail($request->user_id);
-			$user->name = $request->name;
-			$user->phone = $request->phone;
+    		$user->save();
+    		Auth::user()->name = $user->name;
+    		Auth::user()->phone = $user->phone;
+    		Auth::user()->profile_pic = $user->profile_pic;
 
-			$image = $request->file('avatar');
+    		Session::flash("success", "Profile details is updated!");
+    		return redirect('/profile');
+    	}
+    	catch (\Exception $e) {
+    		Session::flash("error", $e->getMessage());
+    		return redirect::back();
+    	}
+    }
 
-			if($image != null) {
-				$extension = $image->extension();
-				if ($extension == "jpeg") {
-					$extension = "jpg";
-				}
+    public function register(Request $request)
+    {
+    	try
+    	{
+    		$checkEmail = User::where("email", $request->email)->count();
+    		if ($checkEmail > 0){
+    			Session::flash("error", "Your email is already taken.");
+    			return redirect::back();
+    		}
+    		else {
+    			$user = new User();
+    			$user->name = $request->username;
+    			$user->email = $request->email;
+    			$user->password = bcrypt($request->password);
+    			$user->phone = $request->phone;
+    			$user->save();
 
-				$date = Carbon::now()->format('YmdHis');
-				Storage::disk('public')->put($date.'.'.$extension, File::get($image));
-				$user->profile_pic = '/img/uploads/profile/'.$date.'.'.$extension;
-			}
-
-			$user->save();
-			Auth::user()->name = $user->name;
-			Auth::user()->phone = $user->phone;
-			Auth::user()->profile_pic = $user->profile_pic;
-
-			Session::flash("success", "Profile details is updated!");
-			return redirect('/profile');
-		}
-		catch (\Exception $e) {
-			Session::flash("error", $e->getMessage());
-			return redirect::back();
-		}
-	}
-
-	public function register(Request $request)
-	{
-		try
-		{
-			$checkEmail = User::where("email", $request->email)->count();
-			if ($checkEmail > 0){
-				Session::flash("error", "Your email is already taken.");
-				return redirect::back();
-			}
-			else {
-				$user = new User();
-				$user->name = $request->username;
-				$user->email = $request->email;
-				$user->password = bcrypt($request->password);
-				$user->phone = $request->phone;
-				$user->save();
-
-				if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+    			if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
    		 			// The user is active, not suspended, and exists.
 					return redirect('/dashboard');
 				}

@@ -7,5 +7,5 @@ use Carbon\Carbon;
 
 class Group extends Model
 {
-    //
+    protected $table = 'groups';
 }
