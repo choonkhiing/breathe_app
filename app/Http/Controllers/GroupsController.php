@@ -28,7 +28,7 @@ class GroupsController extends Controller
 		try {
             $group = new Group();
             $group->title = $request->title;
-            $group->description = $request->description;
+            $group->description = $request->description ?? '';
             $group->created_by = Auth::user()->id;
 
             $group->save();
