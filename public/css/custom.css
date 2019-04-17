@@ -270,3 +270,7 @@ button.logout_btn {
     max-width: 25px;
     margin-top: 5px;
 }
+
+.daterangepicker .drp-calendar {
+    max-width: 350px !important;
+}
