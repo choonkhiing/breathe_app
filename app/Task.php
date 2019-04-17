@@ -34,4 +34,8 @@ class Task extends Model
     public function settings(){
         return $this->hasOne('App\Setting', 'task_id', 'id');
     }
+
+    public function group(){
+        return $this->hasOne('App\Group', 'id', 'group_id');
+    }
 }

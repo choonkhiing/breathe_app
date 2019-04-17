@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Hash;
 
 use \App\User;
 use \App\Task;
+use \App\Group;
+use \App\GroupMember;
 use \App\Collection;
 use \App\Setting;
 use \App\GroupInvitation;
@@ -46,16 +48,23 @@ class UserController extends Controller
 	}
 
 	public function dashboard()
-	{
-		$cls = Collection::where("user_id", \Auth::user()->id)->get();
+	{  
+        $groups = DB::table('groups')
+                ->select('groups.*')
+                ->join('group_members', 'groups.id', '=', 'group_members.group_id')
+                ->where('groups.status', '=', 1)
+                ->where('group_members.status', '=', 1)
+                ->where('group_members.user_id', '=', Auth::user()->id)
+                ->get();
+  
+        $tasks = Task::whereDate("due_date", ">=", Carbon::today())
+        ->whereDate("start_date", "<=", Carbon::today())
+        ->where("status", 0)->get();
 
-        $tasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
-        ->orderBy("due_date", "ASC")
-        ->orderBy("priority", "DESC");
 
-        $organizedTasks = $this::organizeTasks($tasks);
+        $stressLevel = $this->calculateStressLevel($tasks);
 
-        return view("user/dashboard", compact("organizedTasks", "cls"));
+        return view("user/dashboard", compact("groups", "stressLevel"));
     }
 
     public function profile()

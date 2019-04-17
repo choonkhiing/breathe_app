@@ -45,34 +45,35 @@ LOCK TABLES `collections` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `group_details`
+-- Table structure for table `group_members`
 --
 
-DROP TABLE IF EXISTS `group_details`;
+DROP TABLE IF EXISTS `group_members`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `group_details` (
+CREATE TABLE `group_members` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `group_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
-  `permission` int(11) NOT NULL DEFAULT '0',
+  `type` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'guest',
+  `status` int(11) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `group_details_group_id_foreign` (`group_id`),
-  KEY `group_details_user_id_foreign` (`user_id`),
-  CONSTRAINT `group_details_group_id_foreign` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
-  CONSTRAINT `group_details_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  KEY `group_members_group_id_foreign` (`group_id`),
+  KEY `group_members_user_id_foreign` (`user_id`),
+  CONSTRAINT `group_members_group_id_foreign` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
+  CONSTRAINT `group_members_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `group_details`
+-- Dumping data for table `group_members`
 --
 
-LOCK TABLES `group_details` WRITE;
-/*!40000 ALTER TABLE `group_details` DISABLE KEYS */;
-/*!40000 ALTER TABLE `group_details` ENABLE KEYS */;
+LOCK TABLES `group_members` WRITE;
+/*!40000 ALTER TABLE `group_members` DISABLE KEYS */;
+/*!40000 ALTER TABLE `group_members` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -118,12 +119,16 @@ DROP TABLE IF EXISTS `groups`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `groups` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` int(10) unsigned NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '1',
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `groups_created_by_foreign` (`created_by`),
+  CONSTRAINT `groups_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -148,7 +153,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,7 +162,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'2014_10_12_000000_create_users_table',1),(2,'2014_10_12_100000_create_password_resets_table',1),(3,'2019_02_27_062322_create_collections_table',1),(4,'2019_02_27_074926_create_tasks_table',1),(5,'2019_02_27_082530_create_groups_table',1),(6,'2019_02_27_082632_create_group_details_table',1),(7,'2019_03_23_115635_alter_collections_table',1),(8,'2019_03_24_111211_alter_tasks_table',1),(9,'2019_04_02_125410_create_settings_table',1),(10,'2019_04_14_231753_create_groupinvitations_table',1);
+INSERT INTO `migrations` VALUES (1,'2014_10_12_000000_create_users_table',1),(2,'2014_10_12_100000_create_password_resets_table',1),(3,'2019_01_31_082014_create_reset_password_table',1),(4,'2019_02_27_062322_create_collections_table',1),(5,'2019_02_27_074926_create_tasks_table',1),(6,'2019_02_27_082530_create_groups_table',1),(7,'2019_02_27_082632_create_group_members_table',1),(8,'2019_03_23_115635_alter_collections_table',1),(9,'2019_03_24_111211_alter_tasks_table',1),(10,'2019_04_02_125410_create_settings_table',1),(11,'2019_04_14_231753_create_groupinvitations_table',1);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -183,6 +188,32 @@ CREATE TABLE `password_resets` (
 LOCK TABLES `password_resets` WRITE;
 /*!40000 ALTER TABLE `password_resets` DISABLE KEYS */;
 /*!40000 ALTER TABLE `password_resets` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reset_password`
+--
+
+DROP TABLE IF EXISTS `reset_password`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `reset_password` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reset_password`
+--
+
+LOCK TABLES `reset_password` WRITE;
+/*!40000 ALTER TABLE `reset_password` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reset_password` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -271,7 +302,7 @@ CREATE TABLE `users` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -280,7 +311,6 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Ooi Choon Khiing','choonkhiing@hotmail.com','','-','img/uploads/profile/10216560469918235.jpg',0,1,'10216560469918235',NULL,NULL,'2019-04-16 01:28:20','2019-04-16 01:28:20');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -293,4 +323,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-04-16  9:36:43
+-- Dump completed on 2019-04-16 22:13:09

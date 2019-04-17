@@ -134,11 +134,11 @@
 			@endif
 
 			<!-- begin breadcrumb -->
-			<ol class="breadcrumb pull-right">
+<!-- 			<ol class="breadcrumb pull-right">
 				<li class="breadcrumb-item"><a href="javascript:;">Home</a></li>
 				<li class="breadcrumb-item"><a href="javascript:;">Page Options</a></li>
 				<li class="breadcrumb-item active">Blank Page</li>
-			</ol>
+			</ol> -->
 			<!-- end breadcrumb -->
 			<!-- begin page-header -->
 			<h1 class="page-header">@yield("header")<!-- <small>header small text goes here...</small> --></h1>

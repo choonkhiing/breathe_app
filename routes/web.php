@@ -43,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
 	Route::get('/groups', 'GroupsController@showGroups');
 	
 	//Route::post('/profile/edit', 'UserController@profileEdit');
+	Route::get('/tasks', 'TaskController@showTasks');
 	Route::resource('tasks', 'TaskController');
 	Route::post('/task/completetask/{id}', 'TaskController@completeTask');
 	Route::resource('collections', 'CollectionController');
