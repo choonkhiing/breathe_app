@@ -31,7 +31,7 @@
 				<h4>Individual</h4>
 			</div>
 			<div class="panel-footer">
-				<a href="tasks?id=0" class="btn btn-purple btn-sm">View Tasks</a>
+				<a href="tasks" class="btn btn-purple btn-sm">View Tasks</a>
 			</div>
 		</div>
 	</div>
@@ -88,7 +88,6 @@
 		<i class="fa fa-2x fa-plus d-block"></i>
 	</div>
 </div>
-
 @stop
 
 @section("page_script")
@@ -96,10 +95,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
 
+
 <script type="text/javascript">
 	$("#btm-action").click(function(){
 		triggerUpdateModal();
 	});
+
 
 	$("#btn_submit").click(function(e){
 		$("#formTask").submit();
@@ -109,15 +110,15 @@
 		var modal = $("#exampleModalCenter");
 
 		if(taskobj != null){
-
 			modal.find("#btn_submit").text("Update Group");
 		} else {
 			modal.find("input[name='_method']").remove();
 			modal.find("#btn_submit").text("Create Group");
 		}
 
+
 		modal.modal("toggle");
-	}
-	
+	}	
 </script>
 @stop
+

@@ -22,9 +22,17 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $group_id = $request->id;
+        $datefilter = $request->query('datefilter');
+        
+        if ($request->query('groupid')) {
+            $group_id = $request->query('groupid');
+        }
+        else {
+            $group_id = $request->id;
+        }
+
         $cls = Collection::where("user_id", \Auth::user()->id)->get();
-        $organizedTasks = $this->organizeTasks($group_id);
+        $organizedTasks = $this->organizeTasks($group_id, $datefilter);
         $group = null;
         //Check if group id exist or not
         if ($group_id != 0 && $group_id != null) {
@@ -43,7 +51,7 @@ class TaskController extends Controller
             }
         }
         
-        return view("user/tasks/index", compact("organizedTasks", "cls", "group"));
+        return view("user/tasks/index", compact("organizedTasks", "cls", "group", "datefilter"));
     }
 
     /**

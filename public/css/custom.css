@@ -317,3 +317,12 @@ button.logout_btn {
 .dashboard-pane .group-list.row {
     margin-bottom: 35px;
 }
+
+.daterangepicker .drp-calendar {
+    max-width: 350px !important;
+}
+
+.fliterDate a {
+    font-size: 16px;
+    margin-left: 10px;
+}

@@ -29,56 +29,97 @@ class Controller extends BaseController
     	Session::flash("message", $message);
     }  
 
-    public function organizeTasks($group_id) {
+    public function organizeTasks($group_id, $datefilter) {
         $tasks = collect();
 
-        if ($group_id == 0 || $group_id == null) {
-            $tasks->todayTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
-            ->whereDate("start_date", "<=", Carbon::today())
-            ->where("status", 0)
-            ->orderBy("due_date", "ASC")
-            ->orderBy("priority", "DESC")->get();
+        if ($datefilter == null){
+            if ($group_id == 0 || $group_id == null) {
+                $tasks->todayTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
+                ->whereDate("start_date", "<=", Carbon::today())
+                ->where("status", 0)
+                ->orderBy("due_date", "ASC")
+                ->orderBy("priority", "DESC")->get();
 
-            
-            $tasks->stressLevel = $this->calculateStressLevel($tasks->todayTasks);
 
-            //Retrieve upcomming tasks
-            $tasks->upcomingTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
-            ->whereDate("start_date", ">", Carbon::today())
-            ->where("status", 0)
-            ->orderBy("due_date", "ASC")
-            ->orderBy("priority", "DESC")->get();
+                $tasks->stressLevel = $this->calculateStressLevel($tasks->todayTasks);
 
-            //Retrieve completed tasks
-            $tasks->completedTasks = Task::with("settings")->where("status", 1)->get();
+                //Retrieve upcomming tasks
+                $tasks->upcomingTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
+                ->whereDate("start_date", ">", Carbon::today())
+                ->where("status", 0)
+                ->orderBy("due_date", "ASC")
+                ->orderBy("priority", "DESC")->get();
+
+                //Retrieve completed tasks
+                $tasks->completedTasks = Task::with("settings")->where("status", 1)->get();
+            }
+            else {
+                $tasks->todayTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
+                ->whereDate("start_date", "<=", Carbon::today())
+                ->where("status", 0)
+                ->where("group_id", $group_id)
+                ->orderBy("due_date", "ASC")
+                ->orderBy("priority", "DESC")->get();
+
+
+                $tasks->stressLevel = $this->calculateStressLevel($tasks->todayTasks);
+
+                //Retrieve upcomming tasks
+                $tasks->upcomingTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
+                ->whereDate("start_date", ">", Carbon::today())
+                ->where("status", 0)
+                ->where("group_id", $group_id)
+                ->orderBy("due_date", "ASC")
+                ->orderBy("priority", "DESC")->get();
+
+                //Retrieve completed tasks
+                $tasks->completedTasks = Task::with("settings")->where("status", 1)->where("group_id", $group_id)->get();
+            }
+
+            //Group the task by priority
+            $tasks->todayTasks = $tasks->todayTasks->groupBy("priority");
+            $tasks->upcomingTasks = $tasks->upcomingTasks->groupBy("priority");
+            $tasks->completedTasks = $tasks->completedTasks->groupBy("priority");
         }
-        else {
-            $tasks->todayTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
-            ->whereDate("start_date", "<=", Carbon::today())
-            ->where("status", 0)
-            ->where("group_id", $group_id)
-            ->orderBy("due_date", "ASC")
-            ->orderBy("priority", "DESC")->get();
+        else{
+            $arr = explode(" - ", $datefilter, 2);
+            $fromDate = date("Y-m-d", strtotime($arr[0]));
+            $toDate = date("Y-m-d", strtotime($arr[1]));
 
-            
-            $tasks->stressLevel = $this->calculateStressLevel($tasks->todayTasks);
+            if ($group_id == 0 || $group_id == null) {
+                $tasks->filterTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
+                ->whereDate("start_date", ">=", $fromDate)
+                ->whereDate("start_date", "<=", $toDate)
+                ->where("status", 0)
+                ->orderBy("due_date", "ASC")
+                ->orderBy("priority", "DESC")->get();
 
-            //Retrieve upcomming tasks
-            $tasks->upcomingTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
-            ->whereDate("start_date", ">", Carbon::today())
-            ->where("status", 0)
-            ->where("group_id", $group_id)
-            ->orderBy("due_date", "ASC")
-            ->orderBy("priority", "DESC")->get();
+                //Retrieve completed tasks
+                $tasks->completedTasks = Task::with("settings")->where("status", 1)
+                ->whereDate("start_date", ">=", $fromDate)
+                ->whereDate("start_date", "<=", $toDate)->get();
+            }
+            else {
+                $tasks->filterTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
+                ->whereDate("start_date", ">=", $fromDate)
+                ->whereDate("start_date", "<=", $toDate)
+                ->where("status", 0)
+                ->where("group_id", $group_id)
+                ->orderBy("due_date", "ASC")
+                ->orderBy("priority", "DESC")->get();
 
-            //Retrieve completed tasks
-            $tasks->completedTasks = Task::with("settings")->where("status", 1)->where("group_id", $group_id)->get();
+                //Retrieve completed tasks
+                $tasks->completedTasks = Task::with("settings")->where("status", 1)->where("group_id", $group_id)
+                ->whereDate("start_date", ">=", $fromDate)
+                ->whereDate("start_date", "<=", $toDate)->get();
+            }
+
+            //Group the task by priority
+            $tasks->filterTasks = $tasks->filterTasks->groupBy("priority");
+            $tasks->completedTasks = $tasks->completedTasks->groupBy("priority");
+            $tasks->stressLevel = 0;
         }
 
-        //Group the task by priority
-        $tasks->todayTasks = $tasks->todayTasks->groupBy("priority");
-        $tasks->upcomingTasks = $tasks->upcomingTasks->groupBy("priority");
-        $tasks->completedTasks = $tasks->completedTasks->groupBy("priority");
         return $tasks;
     }
 
@@ -87,12 +128,12 @@ class Controller extends BaseController
         //Calculate Stress Level
         foreach ($tasks AS $task) {
           foreach (Task::TASK_PRIORITY_LEVEL AS $key => $percentage) {
-                if ($key == $task->priority) {
-                    $stressLevel += $percentage;
-                }
-           }
+            if ($key == $task->priority) {
+                $stressLevel += $percentage;
+            }
         }
-
-        return round($stressLevel);
     }
+
+    return round($stressLevel);
+}
 }

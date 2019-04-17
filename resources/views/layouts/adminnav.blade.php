@@ -22,6 +22,7 @@
 
 	<link href="/css/bootstrap-datepicker.min.css" rel="stylesheet">
 	<link href="/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
 	<!-- ================== END BASE CSS STYLE ================== -->
 	
@@ -158,8 +159,7 @@
 	<script src="/js/parsley.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-	
-	
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 	<!--[if lt IE 9]>
 		<script src="../assets/crossbrowserjs/html5shiv.js"></script>
 		<script src="../assets/crossbrowserjs/respond.min.js"></script>

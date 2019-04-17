@@ -3,11 +3,12 @@
 @section("title", "Individual Tasks")
 @section("header", "Individual Tasks")
 @else
-@section("title", "{{ $group->title }} Tasks")
+@section("title", "Groups Tasks")
 @section("header", "Group Tasks")
 @endif
 
 @section("content")
+@if ($datefilter != null) 
 <div class="stressLevelBar">
 	<div class="progress rounded-corner">
 		@if ($organizedTasks->stressLevel == 0) 
@@ -27,21 +28,51 @@
 		</div>
 	</div>
 </div>
+@endif
 
-<ul class="nav nav-pills">
-	<li class="nav-items">
-		<a href="#nav-pills-tab-1" data-toggle="tab" class="nav-link active">
-			<span class="d-sm-none">Pending</span>
-			<span class="d-sm-block d-none">Pending</span>
-		</a>
-	</li>
-	<li class="nav-items">
-		<a href="#nav-pills-tab-2" data-toggle="tab" class="nav-link">
-			<span class="d-sm-none">Completed</span>
-			<span class="d-sm-block d-none">Completed</span>
-		</a>
-	</li>
-</ul>
+<div class="row">
+	<div class="col-md-6">
+		<ul class="nav nav-pills">
+			<li class="nav-items">
+				<a href="#nav-pills-tab-1" data-toggle="tab" class="nav-link active">
+					<span class="d-sm-none">Pending</span>
+					<span class="d-sm-block d-none">Pending</span>
+				</a>
+			</li>
+			<li class="nav-items">
+				<a href="#nav-pills-tab-2" data-toggle="tab" class="nav-link">
+					<span class="d-sm-none">Completed</span>
+					<span class="d-sm-block d-none">Completed</span>
+				</a>
+			</li>
+			
+		</ul>
+	</div>
+	<div class="col-md-6">
+		<!--Filter date for displaying task-->
+		<div class="filterActionDiv" style="margin-bottom: 25px; float:right;">
+			<form method="GET" id="filterForm">
+				Filter By: <div id="filterdaterange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; margin: 0px 10px; display: inline-block;">
+					<i class="fa fa-calendar"></i>&nbsp;
+					<span></span> <i class="fa fa-caret-down"></i>
+					<input type="hidden" id="datefilter" name="datefilter" />
+					<input type="hidden" id="groupid" name="groupid" />
+				</div> 
+				<button class="btn btn-primary">Submit</button>
+			</form>
+		</div>
+	</div>
+</div>
+@if ($group != null)
+<div class="note note-info">
+  <div class="note-content">
+    <h4><b>{{ $group->title }}</b></h4>
+    <p style="margin-bottom: 0px;">{{ $group->description }}</p>
+  </div>
+</div>
+
+@endif 
+@if ($datefilter == null)
 <h3>Today</h3>
 <div class="tab-content p-0 bg-transparent">
 	<!-- begin tab-pane -->
@@ -181,6 +212,103 @@
 		@endif
 		@endforeach
 	</div>
+@else 
+<h3 class="fliterDate">From: <span class="filterBy">All</span> <a href="tasks{{ $group != null ? '?id='.$group->id : '' }}">Reset</a></h3>
+<div class="tab-content p-0 bg-transparent">
+	<!-- begin tab-pane -->
+	<div class="tab-pane fade active show" id="nav-pills-tab-1">
+		<div class="task-list row">
+			@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
+			@if(!empty($organizedTasks->filterTasks[$key]))
+			<div class="col-md-4" data-priority="{{ $key }}">
+				@foreach($organizedTasks->filterTasks[$key] AS $task)
+				<div class="panel task-panel" data-task-id="{{ $task->id }}">
+					<div class="panel-body">
+						<strong class="f-s-13 task_title pull-left">
+							#{{ $loop->iteration }} {{ $task->title }}
+						</strong>
+						<span class="label {{ \App\Task::TASK_PRIORITY_CLASS[$key] }} pull-right f-s-12">{{ $priority }}</span>
+						@if($task->getCollection)
+						<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
+						@endif
+					</div>
+					<div class="panel-footer clearfix">
+						@if($task->due_date->isToday())
+						<span class="today_warning hvr-pulse">
+							<i class="fa fa-calendar m-r-5"></i>
+							{{ optional($task->start_date)->format('d/m/Y') }}
+							-			
+							{{ optional($task->due_date)->format('d/m/Y') }}
+						</span>
+						@else 
+						<i class="fa fa-calendar m-r-5"></i>
+						{{ optional($task->start_date)->format('d/m/Y') }}
+						-			
+						{{ optional($task->due_date)->format('d/m/Y') }}
+						@endif
+						@if($task->description)
+						<i class="fa fa-list pull-right m-t-3"></i>
+						@endif
+					</div>
+				</div>
+				@endforeach
+			</div>
+			@else
+			<div class="col-md-4">
+				<div class="panel">
+					<div class="panel-body">
+						{{ $priority }} priority tasks goes here!
+					</div>
+				</div>
+			</div>
+			@endif
+			@endforeach
+		</div>
+	</div>
+	<!-- end tab-pane -->
+	<!-- begin tab-pane -->
+	<div class="tab-pane fade" id="nav-pills-tab-2">
+		<div class="task-list row"> 
+			@foreach(\App\Task::TASK_PRIORITY AS $key => $priority)
+			@if(!empty($organizedTasks->completedTasks[$key]))
+			@foreach($organizedTasks->completedTasks[$key] AS $task)
+			<div class="col-md-4" data-priority="{{ $key }}">
+				<div class="panel" data-task-id="{{ $task->id }}">
+					<div class="panel-body">
+						<strong class="f-s-13 task_title pull-left">
+							#{{ $loop->iteration }} {{ $task->title }}
+						</strong>
+						<span class="label {{ \App\Task::TASK_PRIORITY_CLASS[$key] }} pull-right f-s-12">{{ $priority }}</span>
+						@if($task->getCollection)
+						<span class="label label-primary pull-right f-s-12 m-r-5">{{ optional($task->getCollection)->title }}</span>
+						@endif
+					</div>
+					<div class="panel-footer clearfix">
+						@if($task->due_date->isToday())
+						<span class="today_warning hvr-pulse">
+							<i class="fa fa-calendar m-r-5"></i>
+							{{ optional($task->start_date)->format('d/m/Y') }}
+							-			
+							{{ optional($task->due_date)->format('d/m/Y') }}
+						</span>
+						@else 
+						<i class="fa fa-calendar m-r-5"></i>
+						{{ optional($task->start_date)->format('d/m/Y') }}
+						-			
+						{{ optional($task->due_date)->format('d/m/Y') }}
+						@endif
+						@if($task->description)
+						<i class="fa fa-list pull-right m-t-3"></i>
+						@endif
+					</div>
+				</div>
+			</div>
+			@endforeach
+			@endif
+			@endforeach
+		</div>
+	</div>
+@endif
 
 	<div class="modal" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -314,6 +442,79 @@
 
 	<script type="text/javascript">
 		$(function(){
+						//Get url param
+			var urlParams = new URLSearchParams(window.location.search);
+			
+			// //daterangepicker
+			if (urlParams.has('datefilter')) {
+				var datefilterStr = urlParams.get('datefilter');
+				var dates = datefilterStr.split(" - ");
+				start = moment(dates[0], 'DD-MM-YYYY');
+				end = moment(dates[1], 'DD-MM-YYYY');
+			}
+			else {
+				//daterangepicker
+				start = moment().startOf('month');
+				end = moment().endOf('month');
+			}
+			
+			console.log(start, end);
+
+			function cb(start, end) {
+				$('#filterdaterange span').html(start.format('DD-MM-YYYY') + ' - ' + end.format('DD-MM-YYYY'));
+			}
+			
+			$('#filterdaterange').daterangepicker({
+				locale: {
+					format: 'DD-MM-YYYY'
+				},
+				startDate: start,
+				endDate: end,
+				ranges: {
+					'Today': [moment(), moment()],
+					'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month')		.endOf('month')]
+				}
+			}, cb);
+			
+			cb(start, end);
+			
+			var datefilter = start + ' - ' + end;
+			
+			//Get url param
+			var urlParams = new URLSearchParams(window.location.search);
+
+			if (urlParams.has('datefilter')) {
+				datefilter = urlParams.get('datefilter');
+				$("#filterForm input#datefilter").attr('value',  datefilter);
+				$('.filterBy').html(datefilter);
+			}	
+			else {
+				$('.filterBy').html(start.format('DD-MM-YYYY') + ' - ' + end.format('DD-MM-YYYY'));
+			}
+			
+			$(".daterangepicker  .ranges li").click(function () {
+				datefilter = $(this).text();
+			});
+			
+			$("#filterForm button").click(function (e) {
+				@if ($group != null)
+				$("#filterForm input#groupid").attr('value',  "{{ $group->id }}");
+				@endif
+				$("#filterForm input#datefilter").attr('value',  $('#filterdaterange span').html());
+			});
+			
+
+			$("input[type='datepicker']").datepicker({
+				format: "dd/mm/yyyy",
+				autoclose: true,
+				todayHighlight: true,
+				startDate: new Date()
+			});
+
 			$("input[type='datepicker']").datepicker({
 				format: "dd/mm/yyyy",
 				autoclose: true,
