@@ -38,9 +38,9 @@
 </div>
 
 @if (!empty($groups))
-@foreach ($groups AS $group)
 <h1 class="page-header">Group</h1>
 <div class="group-list row">
+	@foreach ($groups AS $group)
 	<div class="col-md-4">
 		<div class="panel group-panel">
 			<div class="panel-body group-panel-bg">
@@ -52,8 +52,8 @@
 			</div>
 		</div>
 	</div>
+	@endforeach
 </div>
-@endforeach
 @endif
 </div>
 <div class="modal" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
