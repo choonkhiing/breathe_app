@@ -33,6 +33,7 @@ class TaskController extends Controller
 
         $cls = Collection::where("user_id", \Auth::user()->id)->get();
         $organizedTasks = $this->organizeTasks($group_id, $datefilter);
+
         $group = null;
         //Check if group id exist or not
         if ($group_id != 0 && $group_id != null) {
@@ -44,12 +45,17 @@ class TaskController extends Controller
             ->where('groups.id', '=', $group_id)
             ->where('group_members.user_id', '=', Auth::user()->id)
             ->first();
-     
+
+        // TODO: find all task in this group
+            
+            
             if ($group == null) {
                 $this::errorMessage("Group not found!");
                 return redirect('/dashboard');
             }
         }
+
+        
         
         return view("user/tasks/index", compact("organizedTasks", "cls", "group", "datefilter"));
     }
@@ -77,6 +83,10 @@ class TaskController extends Controller
             $task->title = $request->title;
             $task->description = $request->description;
             $task->priority = $request->priority;
+
+            if ($request->group_id) {
+                $task->group_id = $request->group_id;  
+            }
 
             //Parse date accepted from front-end to MySQL acceptable date format
             $task->start_date = ($request->startdate) ? Carbon::createFromFormat('d/m/Y', $request->startdate) : null; 

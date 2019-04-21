@@ -3,6 +3,26 @@
 @section("header", "Groups")
 
 @section('content')
+
+@if (!empty($groups))
+<h1 class="page-header">Group</h1>
+<div class="group-list row">
+	@foreach ($groups AS $group)
+	<div class="col-md-4">
+		<div class="panel group-panel">
+			<div class="panel-body group-panel-bg">
+				<h4>{{ $group->title }}</h4>
+				<p>{{ $group->description }}</p>
+			</div>
+			<div class="panel-footer">
+				<a href="tasks?id={{ $group->id }}" class="btn btn-purple btn-sm">View Tasks</a>
+			</div>
+		</div>
+	</div>
+	@endforeach
+</div>
+@endif
+
 <div class="modal" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content pop-up">
@@ -56,10 +76,10 @@
 
 		if(taskobj != null){
 
-			modal.find("#btn_submit").text("Update Task");
+			modal.find("#btn_submit").text("Update Group");
 		} else {
 			modal.find("input[name='_method']").remove();
-			modal.find("#btn_submit").text("Create Task");
+			modal.find("#btn_submit").text("Create Group");
 		}
 
 		modal.modal("toggle");

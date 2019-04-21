@@ -33,6 +33,7 @@ class Controller extends BaseController
         $tasks = collect();
 
         if ($datefilter == null){
+
             if ($group_id == 0 || $group_id == null) {
                 $tasks->todayTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
                 ->whereDate("start_date", "<=", Carbon::today())
@@ -54,6 +55,7 @@ class Controller extends BaseController
                 $tasks->completedTasks = Task::with("settings")->where("status", 1)->get();
             }
             else {
+                //
                 $tasks->todayTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
                 ->whereDate("start_date", "<=", Carbon::today())
                 ->where("status", 0)
@@ -61,7 +63,7 @@ class Controller extends BaseController
                 ->orderBy("due_date", "ASC")
                 ->orderBy("priority", "DESC")->get();
 
-
+                
                 $tasks->stressLevel = $this->calculateStressLevel($tasks->todayTasks);
 
                 //Retrieve upcomming tasks
@@ -82,6 +84,7 @@ class Controller extends BaseController
             $tasks->completedTasks = $tasks->completedTasks->groupBy("priority");
         }
         else{
+            dd('hi');
             $arr = explode(" - ", $datefilter, 2);
             $fromDate = date("Y-m-d", strtotime($arr[0]));
             $toDate = date("Y-m-d", strtotime($arr[1]));
@@ -100,6 +103,7 @@ class Controller extends BaseController
                 ->whereDate("start_date", "<=", $toDate)->get();
             }
             else {
+                //
                 $tasks->filterTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
                 ->whereDate("start_date", ">=", $fromDate)
                 ->whereDate("start_date", "<=", $toDate)

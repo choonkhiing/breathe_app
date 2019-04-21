@@ -110,10 +110,10 @@
 		var modal = $("#exampleModalCenter");
 
 		if(taskobj != null){
-			modal.find("#btn_submit").text("Update Group");
+			modal.find("#btn_submit").text("Update Task");
 		} else {
 			modal.find("input[name='_method']").remove();
-			modal.find("#btn_submit").text("Create Group");
+			modal.find("#btn_submit").text("Create Task");
 		}
 
 
