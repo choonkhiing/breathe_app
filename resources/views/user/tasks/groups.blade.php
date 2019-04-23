@@ -4,9 +4,28 @@
 
 @section('content')
 
+
 <button type="button" class="btn btn-primary btn-action">Invite</button>
 
 
+@if (!empty($groups))
+<h1 class="page-header">Group</h1>
+<div class="group-list row">
+	@foreach ($groups AS $group)
+	<div class="col-md-4">
+		<div class="panel group-panel">
+			<div class="panel-body group-panel-bg">
+				<h4>{{ $group->title }}</h4>
+				<p>{{ $group->description }}</p>
+			</div>
+			<div class="panel-footer">
+				<a href="tasks?id={{ $group->id }}" class="btn btn-purple btn-sm">View Tasks</a>
+			</div>
+		</div>
+	</div>
+	@endforeach
+</div>
+@endif
 
 <div class="modal" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
@@ -67,10 +86,18 @@
 		var modal = $("#exampleModalCenter");
 
 		if(taskobj != null){
+<<<<<<< HEAD
 			// modal.find("#btn_submit").text("Update Task");
 		} else {
 			modal.find("input[name='_method']").remove();
 			// modal.find("#btn_submit").text("Create Task");
+=======
+
+			modal.find("#btn_submit").text("Update Group");
+		} else {
+			modal.find("input[name='_method']").remove();
+			modal.find("#btn_submit").text("Create Group");
+>>>>>>> 762d4cc87743ad80faba4694fc1a989f6523e30c
 		}
 
 		modal.modal("toggle");

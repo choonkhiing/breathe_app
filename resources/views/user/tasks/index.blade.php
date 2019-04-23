@@ -8,7 +8,7 @@
 @endif
 
 @section("content")
-@if ($datefilter != null) 
+@if ($datefilter == null) 
 <div class="stressLevelBar">
 	<div class="progress rounded-corner">
 		@if ($organizedTasks->stressLevel == 0) 
@@ -381,6 +381,7 @@
 							</div>
 						</div>
 						<div class="panel-footer clearfix">
+						<input name = "group_id" type = "hidden" value = "{{$group->id}}"> 
 							<button type="button" id="btn_submit" class="btn btn-primary btn-action pull-right">Create task</button>
 						</div>
 					</div>
@@ -764,7 +765,7 @@
 					modal.find("#btn_submit").text("Update Task");
 				} else {
 					modal.find("input[name='_method']").remove();
-					modal.find("form").attr("action", "/tasks/").attr("method", "POST").trigger("reset");
+					modal.find("form").attr("action", "/tasks").attr("method", "POST").trigger("reset");
 					modal.find("#btn_submit").text("Create Task");
 				}
 

@@ -56,15 +56,41 @@ class UserController extends Controller
                 ->where('group_members.status', '=', 1)
                 ->where('group_members.user_id', '=', Auth::user()->id)
                 ->get();
+   
+        foreach ($groups AS $group) {
+        	//Get tasks count 
+        	$group->taskCount = Task::where('group_id', $group->id)
+        	->where('status', 0)
+        	->whereDate('start_date', '<=', Carbon::today())
+        	->whereDate('due_date', '>=', Carbon::today())->count();
+
+        	//Check whether got task due on today
+        	$group->taskDue = Task::where('group_id', $group->id)
+        	->where('status', 0)
+        	->whereDate('start_date', '<=', Carbon::today())
+        	->whereDate('due_date', Carbon::today())->count();
+        }
   
         $tasks = Task::whereDate("due_date", ">=", Carbon::today())
         ->whereDate("start_date", "<=", Carbon::today())
         ->where("status", 0)->get();
 
+        //Get tasks count 
+        $individual = collect();
+        $individual->taskCount = Task::where('group_id', 0)
+        ->where('status', 0)
+        ->whereDate('start_date', '<=', Carbon::today())
+        ->whereDate('due_date', '>=', Carbon::today())->count();
+
+        //Check whether got task due on today
+        $individual->taskDue = Task::where('group_id', 0)
+        ->where('status', 0)
+        ->whereDate('start_date', '<=', Carbon::today())
+        ->whereDate('due_date', Carbon::today())->count();
 
         $stressLevel = $this->calculateStressLevel($tasks);
 
-        return view("user/dashboard", compact("groups", "stressLevel"));
+        return view("user/dashboard", compact("groups", "individual", "stressLevel"));
     }
 
     public function profile()

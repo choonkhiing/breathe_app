@@ -343,3 +343,15 @@ ul.tagit input[type="text"]{
   font-size: 14px;
   margin-top: 3px !important
 }
+
+.taskCount {
+  float: right;
+}
+
+.taskCount .badge {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 5px 0px;
+}

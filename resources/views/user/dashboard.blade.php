@@ -31,16 +31,29 @@
 				<h4>Individual</h4>
 			</div>
 			<div class="panel-footer">
-				<a href="tasks" class="btn btn-purple btn-sm">View Tasks</a>
+				<div class="">
+				<div class="row">
+				<div class="col-md-6">
+					<a href="tasks" class="btn btn-purple btn-sm">View Tasks</a>
+				</div>
+				<div class="col-md-6">
+					@if ($individual->taskDue > 0)
+					<span class="taskCount">Today's Task(s): <span class="badge badge-danger badge-square">{{ $individual->taskCount }}</span></span>
+					@else
+					<span class="taskCount">Today's Task(s): <span class="badge badge-success badge-square">{{ $individual->taskCount }}</span></span>
+				 	@endif		
+						</div>	
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
 @if (!empty($groups))
-@foreach ($groups AS $group)
 <h1 class="page-header">Group</h1>
 <div class="group-list row">
+	@foreach ($groups AS $group)
 	<div class="col-md-4">
 		<div class="panel group-panel">
 			<div class="panel-body group-panel-bg">
@@ -48,12 +61,25 @@
 				<p>{{ $group->description }}</p>
 			</div>
 			<div class="panel-footer">
-				<a href="tasks?id={{ $group->id }}" class="btn btn-purple btn-sm">View Tasks</a>
+				<div class="">
+				<div class="row">
+				<div class="col-md-6">
+					<a href="tasks?id={{ $group->id }}" class="btn btn-purple btn-sm">View Tasks</a>
+				</div>
+				<div class="col-md-6">
+					@if ($group->taskDue > 0)
+					<span class="taskCount">Today's Task(s): <span class="badge badge-danger badge-square">{{ $group->taskCount }}</span></span>
+					@else
+					<span class="taskCount">Today's Task(s): <span class="badge badge-success badge-square">{{ $group->taskCount }}</span></span>
+					@endif	
+				</div>
+			</div>
+			</div>
 			</div>
 		</div>
 	</div>
+	@endforeach
 </div>
-@endforeach
 @endif
 </div>
 <div class="modal" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -110,10 +136,10 @@
 		var modal = $("#exampleModalCenter");
 
 		if(taskobj != null){
-			modal.find("#btn_submit").text("Update Group");
+			modal.find("#btn_submit").text("Update Task");
 		} else {
 			modal.find("input[name='_method']").remove();
-			modal.find("#btn_submit").text("Create Group");
+			modal.find("#btn_submit").text("Create Task");
 		}
 
 
