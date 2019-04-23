@@ -39,4 +39,8 @@ class User extends Authenticatable
 
         return '<span class="badge ' . $class . '">' . $status . '</span>';
     }
+
+    public function getInvitations(){
+        return $this->hasMany("\App\GroupInvitation", "invitee", "id")->where("status", 0);
+    }
 }

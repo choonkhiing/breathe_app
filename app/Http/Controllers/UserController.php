@@ -212,35 +212,40 @@ class UserController extends Controller
 		}
 	}
 
-	public function processInvitation($action, $group_id)
+	public function processInvitation(Request $request)
 	{
 		try {
+
+			$action = $request->action;
+			$id = $request->id;
+
 			switch($action){
-				case "approve":
+				case "accept":
 				$status = 1;
 				break;
-				case "reject":
-				$status = 0;
+				case "decline":
+				$status = -1;
 				break;
 				default:
 				throw new \Exception('Invalid action');
 				break;
 			}
 
-			$inv = GroupInvitation::find($group_id);
+			$inv = GroupInvitation::find($id);
 			$inv->status = $status;
 			$inv->save();
 
             // Adds user into group
 			if($status == 1){
-				$grp = new GroupDetail();
-				$grp->group_id = $group_id;
+				$grp = new GroupMember();
+				$grp->group_id = $inv->group_id;
 				$grp->user_id = Auth::user()->id;
+				$grp->type = "Member";
 				$grp->save();
 
-				$msg = "Successfully approved invitation";
+				$msg = "Successfully accepted group invitation! <br> You may now collaborate with other members in the group now.";
 			} else {
-				$msg = "Successfully rejected invitation.";
+				$msg = "Successfully declined invitation.";
 			}
 
 			return response()->json(['success' => true, 'msg' => $msg]);

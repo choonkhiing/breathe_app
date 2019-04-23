@@ -6,6 +6,8 @@
 
 <button type="button" class="btn btn-primary btn-action">Invite</button>
 
+
+
 <div class="modal" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content pop-up">
@@ -19,6 +21,10 @@
 						<div class="form-group">
 							<label class="title">Title</label>
 							<input data-parsley-required="true" name="title" type="text" class="form-control form-control-lg" placeholder="Enter Title">
+						</div>
+						<div class="form-group">
+							<label class="title">Invite users to group</label>
+							<ul id="jquery-tagIt-inverse" class="inverse"></ul>
 						</div>
 						<div class="form-group">
 							<label class="title">Description (Optional)</label>
@@ -45,6 +51,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
 
+<link rel="stylesheet" href="css/jquery-tagit.css" />
+<script src="js/jquery-tagit.js"></script>
+
 <script type="text/javascript">
 	$("#btm-action").click(function(){
 		triggerUpdateModal();
@@ -66,5 +75,31 @@
 
 		modal.modal("toggle");
 	}
+
+	$('#jquery-tagIt-inverse').tagit({
+		fieldName: 'invitation[]',
+		beforeTagAdded: function(event, ui) {
+			var email = ui.tag[0].innerText;
+			var add = true;
+        	// Check if email address exists
+        	$.ajax({
+        		async: false,
+        		type: "POST",
+        		url: "/groups/validateEmail",
+        		data:{
+        			_token: '{{ csrf_token() }}',
+        			email: email.slice(0, -1)
+        		},
+        		success: function(response){
+        			if(response.success === false){
+        				add = false;
+		        		// $('#jquery-tagIt-inverse').tagit("removeTagByLabel", email);
+        			}
+        		}
+        	});
+        	return add;
+        	// $('#jquery-tagIt-inverse').tagit("removeTagByLabel", label);
+        }
+    });
 </script>
 @stop

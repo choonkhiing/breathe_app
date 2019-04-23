@@ -326,3 +326,20 @@ button.logout_btn {
     font-size: 16px;
     margin-left: 10px;
 }
+
+ul.tagit.inverse li.tagit-choice-editable{
+  margin-top: 7px
+}
+
+.tagit.ui-widget{
+  height: 46px
+}
+
+.tagit-label{
+  font-size: 14px
+}
+
+ul.tagit input[type="text"]{
+  font-size: 14px;
+  margin-top: 3px !important
+}

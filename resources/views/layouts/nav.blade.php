@@ -21,6 +21,7 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/remodal/1.1.1/remodal-default-theme.min.css" rel="stylesheet" >
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+	<link rel="stylesheet" href="css/notfy.min.css" />
 
 	<link href="/css/bootstrap-datepicker.min.css" rel="stylesheet">
 	<link href="/css/bootstrap-datepicker3.min.css" rel="stylesheet">
@@ -48,6 +49,39 @@
 			</div>
 			<!-- end navbar-header -->
 			<ul class="navbar-nav navbar-right">
+
+				<li class="dropdown">
+					<a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14">
+						<i class="fa fa-bell"></i>
+						@if(count(Auth::user()->getInvitations) > 0)
+						<span class="label">{{ count(Auth::user()->getInvitations) }}</span>
+						@endif
+					</a>
+					<ul class="dropdown-menu media-list dropdown-menu-right dropdown-inv">
+						<li class="dropdown-header">Group Invitation ( {{ count(Auth::user()->getInvitations) ?? '' }} )</li>
+						@foreach(Auth::user()->getInvitations AS $inv)
+						<li class="media">
+							<a href="javascript:;">
+								<div class="media-body">
+									<h6 class="media-heading">
+										{{ $inv->getInviter->name }} invited you to join {{ $inv->getGroup->title }}
+										<i class="fa fa-exclamation-circle text-danger"></i>
+									</h6>
+									<div class="text-muted f-s-11">{{ $inv->created_at->diffForHumans() }}</div>
+									<div class="m-t-10" data-id="{{ $inv->id }}">
+										<span class="btn btn-success btn-sm btn-invitation" data-action="accept">Accept</span>
+										<span class="btn btn-default btn-sm btn-invitation" data-action="decline">Decline</span>
+									</div>
+								</div>
+							</a>
+						</li>
+						@endforeach
+						<!-- <li class="dropdown-footer text-center">
+							<a href="javascript:;">View more</a>
+						</li> -->
+					</ul>
+				</li>
+
 				<li class="dropdown navbar-user">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 						<img src="{{ Auth::user()->profile_pic }}" alt="" /> 
@@ -189,6 +223,8 @@
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
+	<script src="js/notfy.min.js"></script>
+
 	
 	
 	<!--[if lt IE 9]>
@@ -208,6 +244,8 @@
 
 			$("#sidebar [href*='" + pathname + "']").closest("li").addClass("active");
 
+			var notfy = new Notyf();
+
 			// $(".pop-up").click(function(){
 			// 	$(this).fadeOut();
 			// });
@@ -220,8 +258,37 @@
 			// 	e.stopPropagation();
 			// });
 
-			
+			$(document).on("click", ".btn-invitation", function(e){
+				e.stopPropagation();
+				e.preventDefault(); 
+				var action = $(this).attr("data-action");
+				var id = $(this).closest("div").attr("data-id");
+				var media = $(this).closest(".media");
 
+				$.ajax({
+					type: "POST",
+					url: "/processInvitation",
+					data: {
+						_token: '{{ csrf_token() }}',
+						action: action,
+						id: id
+					},
+					success: function(response){
+						if(response.success){
+							notfy.success(response.msg);
+							media.remove();
+
+							// Check if any invitation left
+							if($(".dropdown-inv .media").length == 0){
+								$(".dropdown-inv").removeClass("show");
+							}
+						} else {
+							notfy.error(response.msg);
+						}
+					}
+				});
+				
+			});
 		});
 	</script>
 
