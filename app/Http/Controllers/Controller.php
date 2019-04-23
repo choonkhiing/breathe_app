@@ -84,7 +84,6 @@ class Controller extends BaseController
             $tasks->completedTasks = $tasks->completedTasks->groupBy("priority");
         }
         else{
-            dd('hi');
             $arr = explode(" - ", $datefilter, 2);
             $fromDate = date("Y-m-d", strtotime($arr[0]));
             $toDate = date("Y-m-d", strtotime($arr[1]));

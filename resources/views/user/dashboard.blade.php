@@ -31,7 +31,20 @@
 				<h4>Individual</h4>
 			</div>
 			<div class="panel-footer">
-				<a href="tasks" class="btn btn-purple btn-sm">View Tasks</a>
+				<div class="">
+				<div class="row">
+				<div class="col-md-6">
+					<a href="tasks" class="btn btn-purple btn-sm">View Tasks</a>
+				</div>
+				<div class="col-md-6">
+					@if ($individual->taskDue > 0)
+					<span class="taskCount">Today's Task(s): <span class="badge badge-danger badge-square">{{ $individual->taskCount }}</span></span>
+					@else
+					<span class="taskCount">Today's Task(s): <span class="badge badge-success badge-square">{{ $individual->taskCount }}</span></span>
+				 	@endif		
+						</div>	
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -48,7 +61,20 @@
 				<p>{{ $group->description }}</p>
 			</div>
 			<div class="panel-footer">
-				<a href="tasks?id={{ $group->id }}" class="btn btn-purple btn-sm">View Tasks</a>
+				<div class="">
+				<div class="row">
+				<div class="col-md-6">
+					<a href="tasks?id={{ $group->id }}" class="btn btn-purple btn-sm">View Tasks</a>
+				</div>
+				<div class="col-md-6">
+					@if ($group->taskDue > 0)
+					<span class="taskCount">Today's Task(s): <span class="badge badge-danger badge-square">{{ $group->taskCount }}</span></span>
+					@else
+					<span class="taskCount">Today's Task(s): <span class="badge badge-success badge-square">{{ $group->taskCount }}</span></span>
+					@endif	
+				</div>
+			</div>
+			</div>
 			</div>
 		</div>
 	</div>
