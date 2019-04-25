@@ -115,78 +115,78 @@ body{
 	z-index: 9999;
 	width: 100%;
 	    min-height: calc(100% - (1.75rem * 2));
-}*/
+        }*/
 
-/*Login page*/
-.login.login-with-news-feed .login-header .brand {
-    color: white;
-}
+        /*Login page*/
+        .login.login-with-news-feed .login-header .brand {
+            color: white;
+        }
 
-.right-content {
-	background: #0c1218;
-    height: 100%;
-}
+        .right-content {
+         background: #0c1218;
+         height: 100%;
+     }
 
-.login.login-with-news-feed, .register.register-with-news-feed {
-	height: 100%;
-}
+     .login.login-with-news-feed, .register.register-with-news-feed {
+         height: 100%;
+     }
 
-.login.login-with-news-feed .login-content, .register.register-with-news-feed .register-content {
-    background: #0c1218;
-}
+     .login.login-with-news-feed .login-content, .register.register-with-news-feed .register-content {
+        background: #0c1218;
+    }
 
-button.logout_btn {
-    border: 0;
-    background: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-    font-size: 12px;
-    width: 100%;
-}
+    button.logout_btn {
+        border: 0;
+        background: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-size: 12px;
+        width: 100%;
+    }
 
-.fb-button {
-  background: #3B5998;
-  color: white;
-  padding: 10px;
-  font-weight: 700;
-}
+    .fb-button {
+      background: #3B5998;
+      color: white;
+      padding: 10px;
+      font-weight: 700;
+  }
 
-.fb-button:hover {
-  background: #234998;
-  color: white;
-}
+  .fb-button:hover {
+      background: #234998;
+      color: white;
+  }
 
-.fb-button i {
-  float: left;
-  font-size: 20px;
-}
+  .fb-button i {
+      float: left;
+      font-size: 20px;
+  }
 
-.google-button {
-  display: block;
-  padding: 10px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  -webkit-transition: background-color .218s,border-color .218s,box-shadow .218s;
-  transition: background-color .218s,border-color .218s,box-shadow .218s;
-  cursor: pointer;
-  border: 1px solid #d6d9dc;
-  color: #757575;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,.25);
-  font-weight: 600;
-  margin-top: 10px !important;
-  background: white;
-}
+  .google-button {
+      display: block;
+      padding: 10px;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      -webkit-transition: background-color .218s,border-color .218s,box-shadow .218s;
+      transition: background-color .218s,border-color .218s,box-shadow .218s;
+      cursor: pointer;
+      border: 1px solid #d6d9dc;
+      color: #757575;
+      box-shadow: 0 2px 4px 0 rgba(0,0,0,.25);
+      font-weight: 600;
+      margin-top: 10px !important;
+      background: white;
+  }
 
-.google-button:hover {
-  -webkit-box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
-  box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
-}
+  .google-button:hover {
+      -webkit-box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+      box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+  }
 
-.googleIcon {
-  position: absolute;
-}
+  .googleIcon {
+      position: absolute;
+  }
 
-.hr-text {
+  .hr-text {
     padding: 0;
     border: none;
     color: #383a4f;
@@ -232,21 +232,21 @@ button.logout_btn {
   25% {
     -webkit-transform: scale(1.03);
     transform: scale(1.03);
-  }
-  75% {
+}
+75% {
     -webkit-transform: scale(1.0);
     transform: scale(1.0);
-  }
+}
 }
 @keyframes hvr-pulse {
   25% {
     -webkit-transform: scale(1.03);
     transform: scale(1.03);
-  }
-  75% {
+}
+75% {
     -webkit-transform: scale(1.0);
     transform: scale(1.0);
-  }
+}
 }
 .hvr-pulse {
   display: inline-block;
@@ -344,6 +344,10 @@ ul.tagit input[type="text"]{
   margin-top: 3px !important
 }
 
+ul.tagit{
+    cursor: text;
+}
+
 .taskCount {
   float: right;
 }
@@ -354,4 +358,33 @@ ul.tagit input[type="text"]{
     font-size: 15px;
     font-weight: 700;
     padding: 5px 0px;
+}
+
+.member-panel{
+    padding: 15px;
+}
+
+.member-panel img{
+    width: 60px;
+    border-radius: 50%;
+    margin-right: 10px
+}
+
+.member-name{
+    font-size: 15px;
+    margin-bottom: 0;
+}
+
+.member-name span{
+    text-transform: capitalize;
+}
+
+.member-panel i.fas{
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.member-panel i.fas:hover{
+    background-color: #e5e5e5;
+    cursor: pointer;
 }

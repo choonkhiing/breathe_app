@@ -5,7 +5,7 @@
 @section('content')
 
 
-<button type="button" class="btn btn-primary btn-action">Invite</button>
+<button type="button" id="btn-action" class="btn btn-primary btn-action">Invite</button>
 
 
 @if (!empty($groups))
@@ -74,7 +74,7 @@
 <script src="js/jquery-tagit.js"></script>
 
 <script type="text/javascript">
-	$("#btm-action").click(function(){
+	$("#btn-action").click(function(){
 		triggerUpdateModal();
 	});
 
@@ -86,47 +86,15 @@
 		var modal = $("#exampleModalCenter");
 
 		if(taskobj != null){
-<<<<<<< HEAD
 			// modal.find("#btn_submit").text("Update Task");
 		} else {
 			modal.find("input[name='_method']").remove();
 			// modal.find("#btn_submit").text("Create Task");
-=======
-
-			modal.find("#btn_submit").text("Update Group");
-		} else {
-			modal.find("input[name='_method']").remove();
-			modal.find("#btn_submit").text("Create Group");
->>>>>>> 762d4cc87743ad80faba4694fc1a989f6523e30c
 		}
 
 		modal.modal("toggle");
 	}
 
-	$('#jquery-tagIt-inverse').tagit({
-		fieldName: 'invitation[]',
-		beforeTagAdded: function(event, ui) {
-			var email = ui.tag[0].innerText;
-			var add = true;
-        	// Check if email address exists
-        	$.ajax({
-        		async: false,
-        		type: "POST",
-        		url: "/groups/validateEmail",
-        		data:{
-        			_token: '{{ csrf_token() }}',
-        			email: email.slice(0, -1)
-        		},
-        		success: function(response){
-        			if(response.success === false){
-        				add = false;
-		        		// $('#jquery-tagIt-inverse').tagit("removeTagByLabel", email);
-        			}
-        		}
-        	});
-        	return add;
-        	// $('#jquery-tagIt-inverse').tagit("removeTagByLabel", label);
-        }
-    });
+	
 </script>
 @stop

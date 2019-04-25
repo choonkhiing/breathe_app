@@ -7,6 +7,12 @@
 @section("header", "Group Tasks")
 @endif
 
+@section("breadcrumb")
+@if($group)
+<a href="{{ action('GroupsController@viewDetails', $group->id) }}" class="btn btn-primary text-white">View Group Details</a>
+@endif
+@stop
+
 @section("content")
 @if ($datefilter == null) 
 <div class="stressLevelBar">
@@ -436,8 +442,6 @@
 	@stop
 
 	@section("page_script")
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.all.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.min.css" />
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
 
 
