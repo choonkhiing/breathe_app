@@ -43,6 +43,7 @@ class UserController extends Controller
 			}
 			else {
 				if (Auth::user()->status == 0) {
+					Auth::logout();
 					return redirect::back()->with("error", "Your account is inactive.");
 				}
 				else {
