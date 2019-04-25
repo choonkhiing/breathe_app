@@ -44,6 +44,12 @@ Route::middleware(['auth'])->group(function () {
 		Route::get('/groups', 'GroupsController@showGroups');
 		Route::post('/groups', 'GroupsController@store');
 		Route::post('/groups/validateEmail', 'GroupsController@validateEmail');
+		Route::get('/groups/{id}/details', 'GroupsController@viewDetails');
+		Route::get('/groupMember/{id}', 'GroupsController@getGroupMember');
+		Route::post('/updateGroupMember', 'GroupsController@updateGroupMember');
+		Route::post('/removeGroupMember', 'GroupsController@removeGroupMember');
+		Route::post('/inviteGroupMember', 'GroupsController@inviteGroupMember');
+		Route::post('/leaveGroup/{id}', 'GroupsController@leaveGroup');
 
 		//Route::post('/profile/edit', 'UserController@profileEdit');
 		Route::get('/tasks', 'TaskController@showTasks');
@@ -53,7 +59,7 @@ Route::middleware(['auth'])->group(function () {
 
 		Route::post('/processInvitation', 'UserController@processInvitation');
 	});
-
+	
 	Route::group(['middleware' => 'admin'], function () {
 		Route::get('/admin/users', 'AdminController@users');
 		Route::post('/admin/user/{id}', 'AdminController@getSpecificUser');

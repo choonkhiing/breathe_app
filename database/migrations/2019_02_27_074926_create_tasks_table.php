@@ -25,6 +25,7 @@ class CreateTasksTable extends Migration
             $table->integer('status')->default('0');
             $table->unsignedInteger('group_id')->default('0');
             $table->unsignedInteger('user_id');
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('collection_id')->references('id')->on('collections');

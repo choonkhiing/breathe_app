@@ -262,6 +262,9 @@ class UserController extends Controller
 				case "decline":
 				$status = -1;
 				break;
+				case "delete":
+				$status = -2;
+				break;
 				default:
 				throw new \Exception('Invalid action');
 				break;
@@ -276,12 +279,14 @@ class UserController extends Controller
 				$grp = new GroupMember();
 				$grp->group_id = $inv->group_id;
 				$grp->user_id = Auth::user()->id;
-				$grp->type = "Member";
+				$grp->type = "Guest";
 				$grp->save();
 
 				$msg = "Successfully accepted group invitation! <br> You may now collaborate with other members in the group now.";
-			} else {
+			} else if ($status == -1){
 				$msg = "Successfully declined invitation.";
+			} else {
+				$msg = "Successfully deleted invitation.";
 			}
 
 			return response()->json(['success' => true, 'msg' => $msg]);

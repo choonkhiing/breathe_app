@@ -21,7 +21,7 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/remodal/1.1.1/remodal-default-theme.min.css" rel="stylesheet" >
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-	<link rel="stylesheet" href="css/notfy.min.css" />
+	<link rel="stylesheet" href="/css/notfy.min.css" />
 
 	<link href="/css/bootstrap-datepicker.min.css" rel="stylesheet">
 	<link href="/css/bootstrap-datepicker3.min.css" rel="stylesheet">
@@ -51,7 +51,7 @@
 			<ul class="navbar-nav navbar-right">
 
 				<li class="dropdown">
-					<a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14">
+					<a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14 a-inv">
 						<i class="fa fa-bell"></i>
 						@if(count(Auth::user()->getInvitations) > 0)
 						<span class="label">{{ count(Auth::user()->getInvitations) }}</span>
@@ -65,7 +65,6 @@
 								<div class="media-body">
 									<h6 class="media-heading">
 										{{ $inv->getInviter->name }} invited you to join {{ $inv->getGroup->title }}
-										<i class="fa fa-exclamation-circle text-danger"></i>
 									</h6>
 									<div class="text-muted f-s-11">{{ $inv->created_at->diffForHumans() }}</div>
 									<div class="m-t-10" data-id="{{ $inv->id }}">
@@ -84,7 +83,7 @@
 
 				<li class="dropdown navbar-user">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-						<img src="{{ Auth::user()->profile_pic }}" alt="" /> 
+						<img src="/{{ Auth::user()->profile_pic }}" alt="" /> 
 						<span class="d-none d-md-inline">{{ Auth::user()->name }}</span> <b class="caret"></b>
 					</a>
 					<div class="dropdown-menu dropdown-menu-right">
@@ -158,6 +157,10 @@
 			</div>
 			@endif
 
+			<ol class="breadcrumb pull-right">
+				@yield("breadcrumb")
+			</ol>
+
 			<!-- begin breadcrumb -->
 <!-- 			<ol class="breadcrumb pull-right">
 				<li class="breadcrumb-item"><a href="javascript:;">Home</a></li>
@@ -213,9 +216,10 @@
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
-	<script src="js/notfy.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.all.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.min.css" />
 
-	
+	<script src="/js/notfy.min.js"></script>
 	
 	<!--[if lt IE 9]>
 		<script src="../assets/crossbrowserjs/html5shiv.js"></script>
@@ -226,6 +230,8 @@
 	<!-- ================== END BASE JS ================== -->
 
 	<script>
+		var notyf = new Notyf();
+
 		$(document).ready(function() {
 			App.init();
 
@@ -234,7 +240,6 @@
 
 			$("#sidebar [href*='" + pathname + "']").closest("li").addClass("active");
 
-			var notfy = new Notyf();
 
 			// $(".pop-up").click(function(){
 			// 	$(this).fadeOut();
@@ -265,21 +270,26 @@
 					},
 					success: function(response){
 						if(response.success){
-							notfy.success(response.msg);
+							notyf.success(response.msg);
 							media.remove();
 
 							// Check if any invitation left
 							if($(".dropdown-inv .media").length == 0){
 								$(".dropdown-inv").removeClass("show");
+								$(".a-inv span.label").remove();
+								$(".dropdown-header").text("Group Invitation");
 							}
 						} else {
-							notfy.error(response.msg);
+							notyf.error(response.msg);
 						}
 					}
 				});
-				
 			});
 		});
+
+		function errMessage(target, msg){
+			$(target).text(msg).show();
+		}
 	</script>
 
 	@yield('page_script')
