@@ -113,22 +113,6 @@
 
 			@yield("content")
 			
-			<!-- begin panel -->
-			<!-- <div class="panel panel-inverse">
-				<div class="panel-heading">
-					<div class="panel-heading-btn">
-						<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>
-						<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
-						<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
-						<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
-					</div>
-					<h4 class="panel-title">Panel Title here</h4>
-				</div>
-				<div class="panel-body">
-					Panel Content Here
-				</div>
-			</div> -->
-			<!-- end panel -->
 		</div>
 		<!-- end #content -->
 
@@ -166,39 +150,10 @@
 			var pathname = window.location.pathname;
 			console.log(pathname);
 
-			$("#sidebar [href*='" + pathname + "']").closest("li").addClass("active");
-
-			// $(".pop-up").click(function(){
-			// 	$(this).fadeOut();
-			// });
-
-			// $("#btm-action").click(function(){
-			// 	$(".pop-up").fadeIn();
-			// });
-
-			// $(".pop-up-box").click(function(e){
-			// 	e.stopPropagation();
-			// });
-
-			
-
+			$("#sidebar [href*='" + pathname + "']").closest("li").addClass("active");			
 		});
 	</script>
 
-	<!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
-
-<script type="text/javascript">
-	$(function(){
-		$("#table_users").dataTable({
-			"columnDefs": [ {
-				"targets": [3,4],
-				"orderable": false
-			} ]
-		});
-	});
-</script> -->
 
 	@yield('page_script')
 

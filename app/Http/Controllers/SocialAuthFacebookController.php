@@ -37,7 +37,13 @@ class SocialAuthFacebookController extends Controller
 
                     if(Auth::loginUsingId($exists->id))
                     {
-                       return redirect('/dashboard');
+                        if (Auth::user()->status == 0) {
+                            Auth::logout();
+                            return redirect::back()->with("error", "Your account is inactive.");
+                        }
+                        else {
+                            return redirect('/dashboard');
+                        }
                     }
                     else
                     {

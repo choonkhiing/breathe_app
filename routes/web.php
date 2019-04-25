@@ -62,6 +62,10 @@ Route::middleware(['auth'])->group(function () {
 	
 	Route::group(['middleware' => 'admin'], function () {
 		Route::get('/admin/users', 'AdminController@users');
+		Route::post('/admin/user/{id}', 'AdminController@getSpecificUser');
+		Route::post('/admin/edit', 'AdminController@update');
+		Route::post('/admin/deactivate/{id}', 'AdminController@deactivateMember');
+		Route::post('/admin/activate/{id}', 'AdminController@activateMember');
 	});
 });
 
