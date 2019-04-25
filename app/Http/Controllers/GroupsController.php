@@ -51,14 +51,14 @@ class GroupsController extends Controller
             $group_member->status = 1;
             $group_member->save();
 
-            foreach($request->invitation AS $email){
-                $user = User::where("email", $email)->first();
-                $inv = new GroupInvitation();
-                $inv->inviter = Auth::user()->id;
-                $inv->invitee = $user->id;
-                $inv->group_id = $group->id;
-                $inv->save();
-            }
+            // foreach($request->invitation AS $email){
+            //     $user = User::where("email", $email)->first();
+            //     $inv = new GroupInvitation();
+            //     $inv->inviter = Auth::user()->id;
+            //     $inv->invitee = $user->id;
+            //     $inv->group_id = $group->id;
+            //     $inv->save();
+            // }
 
             // dd($request->invitation);
 

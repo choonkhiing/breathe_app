@@ -355,3 +355,7 @@ ul.tagit input[type="text"]{
     font-weight: 700;
     padding: 5px 0px;
 }
+
+.panel.task-panel {
+    cursor: pointer;
+}

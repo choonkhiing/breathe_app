@@ -131,12 +131,11 @@ class Controller extends BaseController
         //Calculate Stress Level
         foreach ($tasks AS $task) {
           foreach (Task::TASK_PRIORITY_LEVEL AS $key => $percentage) {
-            if ($key == $task->priority) {
-                $stressLevel += $percentage;
+                if ($key == $task->priority) {
+                    $stressLevel += $percentage;
+                }
             }
         }
+        return round($stressLevel);
     }
-
-    return round($stressLevel);
-}
 }
