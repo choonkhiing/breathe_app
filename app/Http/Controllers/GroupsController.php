@@ -66,6 +66,14 @@ class GroupsController extends Controller
     {
         try {
             $group = Group::findOrFail($id);
+
+            $gm = GroupMember::where("user_id", Auth::user()->id)->where("group_id", $id)->first();
+
+            if(empty($gm)){
+                $this::errorMessage("You do not belong in this group!");
+                 return redirect('/dashboard');
+            }
+
             return view("user.groupdetails", compact("group"));
         } catch (Exception $e) {
             return redirect::back();

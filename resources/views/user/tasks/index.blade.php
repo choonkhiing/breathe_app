@@ -662,15 +662,18 @@
 					}).done(function(response){
 
 						if(response.success){
-							var target_elem = $("div[data-priority='" + data.priority + "']");
-							$("#taskDetail").modal("hide");
-							elem.remove();
 
-							if(target_elem.find("div[data-task-id]").length == 0){
-								appendPlaceholder(target_elem, data.priority);
-							}
+							window.location.reload();
 
-							updateBar(stressLvl);
+							// var target_elem = $("div[data-priority='" + data.priority + "']");
+							// $("#taskDetail").modal("hide");
+							// elem.remove();
+
+							// if(target_elem.find("div[data-task-id]").length == 0){
+							// 	appendPlaceholder(target_elem, data.priority);
+							// }
+
+							// updateBar(stressLvl);
 						} else {
 							alert(response.msg);
 						}

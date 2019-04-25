@@ -123,13 +123,13 @@
 							<span>Groups</span> 
 						</a>	
 						<ul class="sub-menu">
-						@foreach (Auth::user()->groups() as $group)
-						<li>
-							<a href="tasks?id={{ $group->id }}">
-								<span>{{ $group->title }}</span> 
-							</a>
-						</li>
-						@endforeach
+							@foreach (Auth::user()->groups() as $group)
+							<li>
+								<a href="tasks?id={{ $group->id }}">
+									<span>{{ $group->title }}</span> 
+								</a>
+							</li>
+							@endforeach
 						</ul>
 					</li>
 					@endif
@@ -192,6 +192,22 @@
 			<!-- end panel -->
 		</div>
 		<!-- end #content -->
+		@isset($stressLevel)
+		<div class="div-destress" style="display: none">
+			@if ($stressLevel == 0) 
+			<h2>Rule number one is, don’t sweat the small stuff. Rule number two is, it’s all small stuff.<br> — Robert Eliot</h2>
+			@elseif ($stressLevel >= 0 && $stressLevel < 25) 
+			<h2>Be who you are and say what you feel because those who mind don't matter and those who matter don't mind.<br>– Dr. Suess</h2>
+			@elseif ($stressLevel >= 25 && $stressLevel < 50)
+			<h2>There are far better things ahead than any we leave behind.<br>- C. S. Lewis</h2>
+			@elseif ($stressLevel >= 50 && $stressLevel < 75)
+			<h2>The greatest weapon against stress is our ability to choose one thought over another.<br>– William James</h2>
+			@elseif ($stressLevel >= 75)
+			<h2>Set peace of mind as your highest goal, and organize your life around it.<br>— Brian Tracy</h2>
+			@endif 
+			<a id="btn_dismissMsg" href="#">Dismiss</a>
+		</div>
+		@endisset
 
 		<!-- begin scroll to top btn -->
 		<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
@@ -216,7 +232,7 @@
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.all.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.all.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.min.css" />
 
 	<script src="/js/notfy.min.js"></script>
@@ -232,8 +248,23 @@
 	<script>
 		var notyf = new Notyf();
 
+		@isset($stressLevel)
+		var curStressLevel = "{{ $stressLevel }}";
+
+		var stressLevel = Cookies.get('stressLevel');
+
+		if(curStressLevel != stressLevel){
+			Cookies.set('stressLevel', '{{ isset($stressLevel) ? $stressLevel : 0 }}');
+			$(".div-destress").show();
+		}
+		@endisset
+
 		$(document).ready(function() {
 			App.init();
+
+			$("#btn_dismissMsg").click(function(){
+				$(".div-destress").hide();
+			});
 
 			var pathname = window.location.pathname;
 			console.log(pathname);
