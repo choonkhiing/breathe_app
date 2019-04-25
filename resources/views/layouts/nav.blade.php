@@ -109,46 +109,36 @@
 							<i class="fa fa-chalkboard"></i>
 							<span>Dashboard</span>
 						</a>
-					<!-- 	<ul class="sub-menu">
-							<li><a href="index.html">Dashboard v1</a></li>
-							<li><a href="index_v2.html">Dashboard v2</a></li>
-						</ul> -->
 					</li>
-					<!-- <li class="has-sub">
-						<a href="javascript:;">
-							<span class="badge pull-right">10</span>
-							<i class="fa fa-hdd"></i> 
-							<span>Email</span>
-						</a>
-						<ul class="sub-menu">
-							<li><a href="email_inbox.html">Inbox</a></li>
-							<li><a href="email_compose.html">Compose</a></li>
-							<li><a href="email_detail.html">Detail</a></li>
-						</ul>
-					</li> -->
 					<li>
 						<a href="{{ action('CollectionController@index') }}">
 							<i class="fas fa-folder-open"></i> 
 							<span>Collections</span> 
 						</a>
 					</li>
-					<!-- <li>
-						<a href="{{ action('TaskController@index') }}">
-							<i class="fas fa-tasks"></i> 
-							<span>Tasks</span> 
-						</a>
-					</li> -->
-					<li>
-						<a href="/groups">
+					@if (Auth::user()->groups())
+					<li class="has-sub">
+						<a href="javascript:;">
+							<b class="caret"></b>
 							<i class="fas fa-users"></i> 
 							<span>Groups</span> 
-						</a>
+						</a>	
+						<ul class="sub-menu">
+						@foreach (Auth::user()->groups() as $group)
+						<li>
+							<a href="tasks?id={{ $group->id }}">
+								<span>{{ $group->title }}</span> 
+							</a>
+						</li>
+						@endforeach
+						</ul>
 					</li>
+					@endif
 					<li>
 						<a href="/settings">
 							<i class="fas fa-cogs"></i> 
 							<span>Settings</span> 
-						</a>
+						</a>		
 					</li>
 				</ul>
 				<!-- end sidebar nav -->
