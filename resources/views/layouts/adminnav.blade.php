@@ -53,8 +53,6 @@
 						<span class="d-none d-md-inline">{{ Auth::user()->name }}</span> <b class="caret"></b>
 					</a>
 					<div class="dropdown-menu dropdown-menu-right">
-						<a href="/profile" class="dropdown-item">Profile</a>
-						<div class="dropdown-divider"></div>
 						<form method="POST" action="{{ action('UserController@logout') }}" class="logout">{{ csrf_field() }}<button class="logout_btn" type="submit" class="logout">Log Out</button></form>
 
 					</div>
@@ -109,13 +107,6 @@
 			</div>
 			@endif
 
-			<!-- begin breadcrumb -->
-			<ol class="breadcrumb pull-right">
-				<li class="breadcrumb-item"><a href="javascript:;">Home</a></li>
-				<li class="breadcrumb-item"><a href="javascript:;">Page Options</a></li>
-				<li class="breadcrumb-item active">Blank Page</li>
-			</ol>
-			<!-- end breadcrumb -->
 			<!-- begin page-header -->
 			<h1 class="page-header">@yield("header")<!-- <small>header small text goes here...</small> --></h1>
 			<!-- end page-header -->

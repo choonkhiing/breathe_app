@@ -38,8 +38,17 @@ class UserController extends Controller
 	public function login(Request $request) {
 		if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
    		 	// The user is active, not suspended, and exists.
-
-			return redirect('/dashboard');
+			if (Auth::user()->type == 1) {
+				return redirect('/admin/users');
+			}
+			else {
+				if (Auth::user()->status == 0) {
+					return redirect::back()->with("error", "Your account is inactive.");
+				}
+				else {
+					return redirect('/dashboard');
+				}	
+			}			
 		}
 		else
 		{

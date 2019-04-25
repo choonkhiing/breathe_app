@@ -33,25 +33,31 @@ Route::get('/reset-password/{token}', 'UserController@showResetPassword');
 Route::post('/reset-password', 'UserController@resetPassword');
 
 Route::middleware(['auth'])->group(function () {
-	Route::get('/dashboard', 'UserController@dashboard');
-	Route::get('/profile', 'UserController@profile');
-	Route::get('/settings', 'SettingsController@showSettings');
-	Route::post('/settings/save', 'SettingsController@saveSettings');
-	Route::post('/profile/edit', 'UserController@editProfile');
+	Route::group(['middleware' => 'normal'], function () {
+		Route::get('/dashboard', 'UserController@dashboard');
+		Route::get('/profile', 'UserController@profile');
+		Route::get('/settings', 'SettingsController@showSettings');
+		Route::post('/settings/save', 'SettingsController@saveSettings');
+		Route::post('/profile/edit', 'UserController@editProfile');
 
-	// Route::resource('groups', 'GroupsController');
-	Route::get('/groups', 'GroupsController@showGroups');
-	Route::post('/groups', 'GroupsController@store');
-	Route::post('/groups/validateEmail', 'GroupsController@validateEmail');
-	
-	//Route::post('/profile/edit', 'UserController@profileEdit');
-	Route::get('/tasks', 'TaskController@showTasks');
-	Route::resource('tasks', 'TaskController');
-	Route::post('/task/completetask/{id}', 'TaskController@completeTask');
-	Route::resource('collections', 'CollectionController');
+		// Route::resource('groups', 'GroupsController');
+		Route::get('/groups', 'GroupsController@showGroups');
+		Route::post('/groups', 'GroupsController@store');
+		Route::post('/groups/validateEmail', 'GroupsController@validateEmail');
 
-	Route::post('/processInvitation', 'UserController@processInvitation');
+		//Route::post('/profile/edit', 'UserController@profileEdit');
+		Route::get('/tasks', 'TaskController@showTasks');
+		Route::resource('tasks', 'TaskController');
+		Route::post('/task/completetask/{id}', 'TaskController@completeTask');
+		Route::resource('collections', 'CollectionController');
+
+		Route::post('/processInvitation', 'UserController@processInvitation');
+	});
+
+	Route::group(['middleware' => 'admin'], function () {
+		Route::get('/admin/users', 'AdminController@users');
+	});
 });
 
-Route::get('/admin/users', 'AdminController@users');
+
 
