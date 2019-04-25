@@ -38,8 +38,17 @@ class UserController extends Controller
 	public function login(Request $request) {
 		if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
    		 	// The user is active, not suspended, and exists.
-
-			return redirect('/dashboard');
+			if (Auth::user()->type == 1) {
+				return redirect('/admin/users');
+			}
+			else {
+				if (Auth::user()->status == 0) {
+					return redirect::back()->with("error", "Your account is inactive.");
+				}
+				else {
+					return redirect('/dashboard');
+				}	
+			}			
 		}
 		else
 		{
@@ -49,109 +58,109 @@ class UserController extends Controller
 
 	public function dashboard()
 	{  
-        $groups = DB::table('groups')
-                ->select('groups.*')
-                ->join('group_members', 'groups.id', '=', 'group_members.group_id')
-                ->where('groups.status', '=', 1)
-                ->where('group_members.status', '=', 1)
-                ->where('group_members.user_id', '=', Auth::user()->id)
-                ->get();
-   
-        foreach ($groups AS $group) {
+		$groups = DB::table('groups')
+		->select('groups.*')
+		->join('group_members', 'groups.id', '=', 'group_members.group_id')
+		->where('groups.status', '=', 1)
+		->where('group_members.status', '=', 1)
+		->where('group_members.user_id', '=', Auth::user()->id)
+		->get();
+
+		foreach ($groups AS $group) {
         	//Get tasks count 
-        	$group->taskCount = Task::where('group_id', $group->id)
-        	->where('status', 0)
-        	->whereDate('start_date', '<=', Carbon::today())
-        	->whereDate('due_date', '>=', Carbon::today())->count();
+			$group->taskCount = Task::where('group_id', $group->id)
+			->where('status', 0)
+			->whereDate('start_date', '<=', Carbon::today())
+			->whereDate('due_date', '>=', Carbon::today())->count();
 
         	//Check whether got task due on today
-        	$group->taskDue = Task::where('group_id', $group->id)
-        	->where('status', 0)
-        	->whereDate('start_date', '<=', Carbon::today())
-        	->whereDate('due_date', Carbon::today())->count();
-        }
-  
-        $tasks = Task::whereDate("due_date", ">=", Carbon::today())
-        ->whereDate("start_date", "<=", Carbon::today())
-        ->where("status", 0)->get();
+			$group->taskDue = Task::where('group_id', $group->id)
+			->where('status', 0)
+			->whereDate('start_date', '<=', Carbon::today())
+			->whereDate('due_date', Carbon::today())->count();
+		}
+
+		$tasks = Task::whereDate("due_date", ">=", Carbon::today())
+		->whereDate("start_date", "<=", Carbon::today())
+		->where("status", 0)->get();
 
         //Get tasks count 
-        $individual = collect();
-        $individual->taskCount = Task::where('group_id', 0)
-        ->where('status', 0)
-        ->whereDate('start_date', '<=', Carbon::today())
-        ->whereDate('due_date', '>=', Carbon::today())->count();
+		$individual = collect();
+		$individual->taskCount = Task::where('group_id', 0)
+		->where('status', 0)
+		->whereDate('start_date', '<=', Carbon::today())
+		->whereDate('due_date', '>=', Carbon::today())->count();
 
         //Check whether got task due on today
-        $individual->taskDue = Task::where('group_id', 0)
-        ->where('status', 0)
-        ->whereDate('start_date', '<=', Carbon::today())
-        ->whereDate('due_date', Carbon::today())->count();
+		$individual->taskDue = Task::where('group_id', 0)
+		->where('status', 0)
+		->whereDate('start_date', '<=', Carbon::today())
+		->whereDate('due_date', Carbon::today())->count();
 
-        $stressLevel = $this->calculateStressLevel($tasks);
+		$stressLevel = $this->calculateStressLevel($tasks);
 
-        return view("user/dashboard", compact("groups", "individual", "stressLevel"));
-    }
+		return view("user/dashboard", compact("groups", "individual", "stressLevel"));
+	}
 
-    public function profile()
-    {	
-    	$user = User::find(Auth::user()->id);
-    	return view("user/profile", compact("user"));
-    }
+	public function profile()
+	{	
+		$user = User::find(Auth::user()->id);
+		return view("user/profile", compact("user"));
+	}
 
-    public function editProfile(Request $request)
-    {	
-    	try
-    	{
-    		$user = User::findOrFail($request->user_id);
-    		$user->name = $request->name;
-    		$user->phone = $request->phone;
+	public function editProfile(Request $request)
+	{	
+		try
+		{
+			$user = User::findOrFail($request->user_id);
+			$user->name = $request->name;
+			$user->phone = $request->phone;
 
-    		$image = $request->file('avatar');
+			$image = $request->file('avatar');
 
-    		if($image != null) {
-    			$extension = $image->extension();
-    			if ($extension == "jpeg") {
-    				$extension = "jpg";
-    			}
+			if($image != null) {
+				$extension = $image->extension();
+				if ($extension == "jpeg") {
+					$extension = "jpg";
+				}
 
-    			$date = Carbon::now()->format('YmdHis');
-    			Storage::disk('public')->put($date.'.'.$extension, File::get($image));
-    			$user->profile_pic = '/img/uploads/profile/'.$date.'.'.$extension;
-    		}
+				$date = Carbon::now()->format('YmdHis');
+				Storage::disk('public')->put($date.'.'.$extension, File::get($image));
+				$user->profile_pic = '/img/uploads/profile/'.$date.'.'.$extension;
+			}
 
-    		$user->save();
-    		Auth::user()->name = $user->name;
-    		Auth::user()->phone = $user->phone;
-    		Auth::user()->profile_pic = $user->profile_pic;
+			$user->save();
+			Auth::user()->name = $user->name;
+			Auth::user()->phone = $user->phone;
+			Auth::user()->profile_pic = $user->profile_pic;
 
-    		Session::flash("success", "Profile details is updated!");
-    		return redirect('/profile');
-    	}
-    	catch (\Exception $e) {
-    		Session::flash("error", $e->getMessage());
-    		return redirect::back();
-    	}
-    }
+			Session::flash("success", "Profile details is updated!");
+			return redirect('/profile');
+		}
+		catch (\Exception $e) {
+			Session::flash("error", $e->getMessage());
+			return redirect::back();
+		}
+	}
 
-    public function register(Request $request)
-    {
-    	try
-    	{
-    		$checkEmail = User::where("email", $request->email)->count();
-    		if ($checkEmail > 0){
-    			Session::flash("error", "Your email is already taken.");
-    			return redirect::back();
-    		}
-    		else {
-    			$user = new User();
-    			$user->name = $request->username;
-    			$user->email = $request->email;
-    			$user->password = bcrypt($request->password);
-    			$user->phone = $request->phone;
-    			$user->save();
+	public function register(Request $request)
+	{
+		try
+		{
+			$checkEmail = User::where("email", $request->email)->count();
+			if ($checkEmail > 0){
+				Session::flash("error", "Your email is already taken.");
+				return redirect::back();
+			}
+			else {
+				$user = new User();
+				$user->name = $request->username;
+				$user->email = $request->email;
+				$user->password = bcrypt($request->password);
+				$user->phone = $request->phone;
+				$user->save();
 
-    			if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+				if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
    		 			// The user is active, not suspended, and exists.
 					return redirect('/dashboard');
 				}
@@ -179,48 +188,48 @@ class UserController extends Controller
 		$users = User::all();
 
 		foreach ($users as $user) {
-			$settings = Setting::where('reminder_time', Carbon::now()->format('H:i'))->get();
+			$settings = Setting::where('reminder_time', '<=', Carbon::now()->format('h:i A'))->get();
 			$currDate = Carbon::today();
-
-			if ($settings->isEmpty()) {
-				dd("No one");
-			}
+			$remindTasks = collect(); 
 
 			foreach ($settings as $setting) {
-				$tasks = Task::where('user_id', $user->id)
+				$tasks = Task::with("group")->where('user_id', $user->id)
 				->where('status', 0)
+				->where('id', $setting->task_id)
 				->whereDate('start_date', '<=', $currDate)
 				->whereDate('due_date', '>=', $currDate)
 				->get();
 
-				$remindTasks = collect(); 
-
-        	 	//Get the task is cloased to duedate
+        	 	//Get the task is closed to duedate
 				foreach ($tasks as $task) {
 					if ($currDate->diffInDays($task->due_date) <= $setting->day_before_remind) {
 						$remindTasks->push($task);
 					}	
 				}
-
-				if (!empty($remindTasks)) {
-        	 		//Send email to remind the user
-					try {
-						$beautymail = app()->make(\Snowfire\Beautymail\Beautymail::class);
-						$beautymail->send('emails.reminder', ['user' => $user, 'tasks' => $remindTasks], function($message) use ($user)
-						{
-							$message
-							->from('ckooi@geekycs.com', 'Breathe')
-							->to($user->email, $user->name)
-							->subject('Breathe Reminder');
-						});
-					}
-					catch (\Exception $e)
-					{
-
-					}
-				} 		
 			}
 		}
+
+		$remindTasks = $remindTasks->groupBy("user_id");
+
+		if (!$remindTasks->isEmpty()) {
+        	 		//Send email to remind the user
+			try {
+				foreach ($remindTasks as $remindTask) {
+					$beautymail = app()->make(\Snowfire\Beautymail\Beautymail::class);
+					$beautymail->send('emails.reminder', ['user' => $user, 'tasks' => $remindTask], function($message) use ($user)
+					{
+						$message
+						->from('ckooi@geekycs.com', 'Breathe')
+						->to($user->email, $user->name)
+						->subject('Breathe Reminder');
+					});
+				}
+			}
+			catch (\Exception $e)
+			{
+				dd($e->getMessage());
+			}
+		} 		
 	}
 
 	public function inviteUser($user_id, $group_id)

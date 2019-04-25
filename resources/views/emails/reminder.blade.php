@@ -11,13 +11,19 @@
 </p>
 <table width="100%" cellpadding="0" cellspacing="0">
 	<tr style="background: whitesmoke;">
-		<th width="50%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro;">Task Title</th>
-		<th width="50%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro;">Due Date</th>
+		<th width="33%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro;">Task Title</th>
+		<th width="33%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro;">Due Date</th>
+		<th width="33%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro;">Group</th>
 	</tr>
 	@foreach($tasks AS $task)
-	<tr style="background: whitesmoke;">
-		<td width="50%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro; text-align: center;">{{ $task->title }}</td>
-		<td width="50%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro; text-align: center;">{{ date('d-m-Y', strtotime($task->due_date)) }}</td>
+	<tr style="background: white;">
+		<td width="33%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro; text-align: center;">{{ $task->title }}</td>
+		<td width="33%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro; text-align: center;">{{ date('d-m-Y', strtotime($task->due_date)) }}</td>
+		@if ($task->group)
+		<td width="33%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro; text-align: center;">{{ $task->group->title }}</td>
+		@else
+		<td width="33%" style="padding: 10px 15px; border-bottom: 1px solid gainsboro; text-align: center;">Individual</td>
+		@endif
 	</tr>
 	@endforeach
 </table>

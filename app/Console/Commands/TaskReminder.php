@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\User;
+use \App\Setting;
+use \App\Group;
 
 class TaskReminder extends Command
 {
@@ -12,7 +14,7 @@ class TaskReminder extends Command
      *
      * @var string
      */
-    protected $signature = 'TaskReminder:hourly';
+    protected $signature = 'TaskReminder:everyMinute';
 
     /**
      * The console command description.
@@ -42,47 +44,47 @@ class TaskReminder extends Command
         $users = User::all();
 
         foreach ($users as $user) {
-            $settings = Setting::where('reminder_time', Carbon::now()->format('H:i'))->get();
+            $settings = Setting::where('reminder_time', '<=', Carbon::now()->format('h:i A'))->get();
             $currDate = Carbon::today();
-
-            if ($settings->isEmpty()) {
-                dd("No one");
-            }
+            $remindTasks = collect(); 
 
             foreach ($settings as $setting) {
-                $tasks = Task::where('user_id', $user->id)
+                $tasks = Task::with("group")->where('user_id', $user->id)
                 ->where('status', 0)
+                ->where('id', $setting->task_id)
                 ->whereDate('start_date', '<=', $currDate)
                 ->whereDate('due_date', '>=', $currDate)
                 ->get();
 
-                $remindTasks = collect(); 
-
-                //Get the task is cloased to duedate
+                //Get the task is closed to duedate
                 foreach ($tasks as $task) {
                     if ($currDate->diffInDays($task->due_date) <= $setting->day_before_remind) {
                         $remindTasks->push($task);
                     }   
                 }
-
-                if (!empty($remindTasks)) {
-                    //Send email to remind the user
-                    try {
-                        $beautymail = app()->make(\Snowfire\Beautymail\Beautymail::class);
-                        $beautymail->send('emails.reminder', ['user' => $user, 'tasks' => $remindTasks], function($message) use ($user)
-                        {
-                            $message
-                            ->from('admin@pmxglobal.com.my', 'Breathe')
-                            ->to($user->email, $user->name)
-                            ->subject('Breathe Reminder');
-                        });
-                    }
-                    catch (\Exception $e)
-                    {
-                      
-                    }
-                }       
             }
         }
+
+        $remindTasks = $remindTasks->groupBy("user_id");
+
+        if (!$remindTasks->isEmpty()) {
+                    //Send email to remind the user
+            try {
+                foreach ($remindTasks as $remindTask) {
+                    $beautymail = app()->make(\Snowfire\Beautymail\Beautymail::class);
+                    $beautymail->send('emails.reminder', ['user' => $user, 'tasks' => $remindTask], function($message) use ($user)
+                    {
+                        $message
+                        ->from('ckooi@geekycs.com', 'Breathe')
+                        ->to($user->email, $user->name)
+                        ->subject('Breathe Reminder');
+                    });
+                }
+            }
+            catch (\Exception $e)
+            {
+                dd($e->getMessage());
+            }
+        }       
     }
 }

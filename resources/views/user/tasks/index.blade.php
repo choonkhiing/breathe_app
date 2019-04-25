@@ -387,7 +387,9 @@
 							</div>
 						</div>
 						<div class="panel-footer clearfix">
-						<input name = "group_id" type = "hidden" value = "{{$group->id}}"> 
+						@if ($group != null) 
+						<input name = "group_id" type = "hidden" value = "{{$group->id}}">
+						@endif 
 							<button type="button" id="btn_submit" class="btn btn-primary btn-action pull-right">Create task</button>
 						</div>
 					</div>
@@ -779,7 +781,7 @@
 
 		$(function(){
 			$('#datetimepicker').datetimepicker({
-				format: "HH:mm",
+				format: "hh:mm A",
 			});
 		});
 
