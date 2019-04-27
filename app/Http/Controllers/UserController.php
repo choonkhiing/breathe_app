@@ -83,18 +83,21 @@ class UserController extends Controller
 
 		$tasks = Task::whereDate("due_date", ">=", Carbon::today())
 		->whereDate("start_date", "<=", Carbon::today())
+		->where("user_id", Auth::user()->id)
 		->where("status", 0)->get();
 
         //Get tasks count 
 		$individual = collect();
 		$individual->taskCount = Task::where('group_id', 0)
 		->where('status', 0)
+		->where("user_id", Auth::user()->id)
 		->whereDate('start_date', '<=', Carbon::today())
 		->whereDate('due_date', '>=', Carbon::today())->count();
 
         //Check whether got task due on today
 		$individual->taskDue = Task::where('group_id', 0)
 		->where('status', 0)
+		->where("user_id", Auth::user()->id)
 		->whereDate('start_date', '<=', Carbon::today())
 		->whereDate('due_date', Carbon::today())->count();
 
