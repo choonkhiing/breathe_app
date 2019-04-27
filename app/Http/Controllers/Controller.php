@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Session;
+use Auth;
 use Carbon\Carbon;
 use \App\Task;
 
@@ -38,6 +39,7 @@ class Controller extends BaseController
                 $tasks->todayTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
                 ->whereDate("start_date", "<=", Carbon::today())
                 ->where("status", 0)
+                ->where("user_id", Auth::user()->id)
                 ->orderBy("due_date", "ASC")
                 ->orderBy("priority", "DESC")->get();
 
@@ -48,11 +50,14 @@ class Controller extends BaseController
                 $tasks->upcomingTasks = Task::with("settings")->whereDate("due_date", ">=", Carbon::today())
                 ->whereDate("start_date", ">", Carbon::today())
                 ->where("status", 0)
+                ->where("user_id", Auth::user()->id)
                 ->orderBy("due_date", "ASC")
                 ->orderBy("priority", "DESC")->get();
 
                 //Retrieve completed tasks
-                $tasks->completedTasks = Task::with("settings")->where("status", 1)->get();
+                $tasks->completedTasks = Task::with("settings")
+                ->where("user_id", Auth::user()->id)
+                ->where("status", 1)->get();
             }
             else {
                 //
@@ -75,7 +80,8 @@ class Controller extends BaseController
                 ->orderBy("priority", "DESC")->get();
 
                 //Retrieve completed tasks
-                $tasks->completedTasks = Task::with("settings")->where("status", 1)->where("group_id", $group_id)->get();
+                $tasks->completedTasks = Task::with("settings")->where("status", 1)
+                ->where("group_id", $group_id)->get();
             }
 
             //Group the task by priority
@@ -93,11 +99,13 @@ class Controller extends BaseController
                 ->whereDate("start_date", ">=", $fromDate)
                 ->whereDate("start_date", "<=", $toDate)
                 ->where("status", 0)
+                ->where("user_id", Auth::user()->id)
                 ->orderBy("due_date", "ASC")
                 ->orderBy("priority", "DESC")->get();
 
                 //Retrieve completed tasks
                 $tasks->completedTasks = Task::with("settings")->where("status", 1)
+                ->where("user_id", Auth::user()->id)
                 ->whereDate("start_date", ">=", $fromDate)
                 ->whereDate("start_date", "<=", $toDate)->get();
             }

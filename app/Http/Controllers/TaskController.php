@@ -31,9 +31,6 @@ class TaskController extends Controller
             $group_id = $request->id;
         }
 
-        $cls = Collection::where("user_id", \Auth::user()->id)->get();
-        $organizedTasks = $this->organizeTasks($group_id, $datefilter);
-
         $group = null;
         //Check if group id exist or not
         if ($group_id != 0 && $group_id != null) {
@@ -55,7 +52,8 @@ class TaskController extends Controller
             }
         }
 
-        
+        $cls = Collection::where("user_id", \Auth::user()->id)->get();
+        $organizedTasks = $this->organizeTasks($group_id, $datefilter);
         
         return view("user/tasks/index", compact("organizedTasks", "cls", "group", "datefilter"));
     }

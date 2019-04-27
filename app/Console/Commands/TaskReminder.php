@@ -44,7 +44,7 @@ class TaskReminder extends Command
         $users = User::all();
 
         foreach ($users as $user) {
-            $settings = Setting::where('reminder_time', '<=', Carbon::now()->format('h:i A'))->get();
+            $settings = Setting::where('reminder_time', Carbon::now()->format('h:i A'))->get();
             $currDate = Carbon::today();
             $remindTasks = collect(); 
 
