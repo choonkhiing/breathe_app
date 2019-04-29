@@ -3,7 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\User;
+use Carbon\Carbon;
+
+use \App\User;
+use \App\Task;
 use \App\Setting;
 use \App\Group;
 
@@ -40,11 +43,11 @@ class TaskReminder extends Command
      */
     public function handle()
     {
-        //Check user's reminder time.
+       //Check user's reminder time.
         $users = User::all();
 
         foreach ($users as $user) {
-            $settings = Setting::where('reminder_time', Carbon::now()->format('h:i A'))->get();
+            $settings = Setting::where('reminder_time', '<=', Carbon::now()->format('h:i A'))->get();
             $currDate = Carbon::today();
             $remindTasks = collect(); 
 
