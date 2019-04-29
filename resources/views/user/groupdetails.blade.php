@@ -37,7 +37,7 @@
 		<div class="panel member-panel" data-inv="{{ $inv->id }}">
 			<div class="d-flex justify-content-between align-items-center">
 				<div class="d-flex align-items-center">
-					<img src="/{{ $member->user->profile_pic }}" /> 
+					<img src="/{{ $inv->getInvitee->profile_pic }}" /> 
 					<p class="member-name">{{ $inv->getInvitee->name }}<br>{{ $inv->getInvitee->email }}</p>
 				</div>
 				<i class="fas fa-times btn-removeInv"></i>

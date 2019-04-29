@@ -40,7 +40,7 @@
 		<div id="header" class="header navbar-default">
 			<!-- begin navbar-header -->
 			<div class="navbar-header">
-				<a href="index.html" class="navbar-brand"><span class="navbar-logo"></span> <b>Breathe</b></a>
+				<a href="/" class="navbar-brand"><span class="navbar-logo"></span> <b>Breathe</b></a>
 				<button type="button" class="navbar-toggle" data-click="sidebar-toggled">
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
@@ -115,7 +115,7 @@
 							<span>Collections</span> 
 						</a>
 					</li>
-					@if (Auth::user()->groups())
+					@if (count(Auth::user()->groups()) > 0)
 					<li class="has-sub">
 						<a href="javascript:;">
 							<b class="caret"></b>
@@ -133,12 +133,6 @@
 						</ul>
 					</li>
 					@endif
-					<li>
-						<a href="/settings">
-							<i class="fas fa-cogs"></i> 
-							<span>Settings</span> 
-						</a>		
-					</li>
 				</ul>
 				<!-- end sidebar nav -->
 			</div>
@@ -247,6 +241,10 @@
 
 	<script>
 		var notyf = new Notyf();
+
+		$("form.logout").submit(function(){
+			Cookies.remove('stressLevel');
+		});
 
 		@isset($stressLevel)
 		var curStressLevel = "{{ $stressLevel }}";

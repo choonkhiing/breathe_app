@@ -29,10 +29,11 @@ class GroupsController extends Controller
     public function validateEmail(Request $request)
     {
         $success = true;
+        $msg = "";
 
         $user = User::where("email", $request->email)->where("id", "!=", Auth::user()->id)->where("status", 1)->first();
         if(!empty($request->group_id) && !empty($user)){
-            $inv = GroupInvitation::where("invitee", $user->id)->where("group_id", $request->group_id)->where("status", "!=" ,-2)->orderBy('id', 'DESC')->first();
+            $inv = GroupInvitation::where("invitee", $user->id)->where("group_id", $request->group_id)->where("status", ">" ,-1)->orderBy('id', 'DESC')->first();
 
             //Check if user is a group member
             $gm = GroupMember::where("group_id", $request->group_id)->where("user_id", $user->id)->first();
@@ -42,7 +43,7 @@ class GroupsController extends Controller
                     $msg = "You have already sent an invitation to " . $user->email;
                 } else if($inv->status == 1 && $gm) {
                     $msg = "User has already been added to this group.";
-                } else {
+                } else{
                     $msg = "";
                 }
             }
@@ -55,11 +56,11 @@ class GroupsController extends Controller
         }
 
 
-        if(empty($user) || !empty($gm) || (!empty($gm) && !empty($inv)) || (!empty($inv) && $inv->status != -2)){
+        if(empty($user) || !empty($gm) || (!empty($inv) && $inv->status > -1 && !empty($gm))){
             $success = false;
         }
 
-        return response()->json(['success' => $success, 'msg' => $msg, 'inv' => $inv ]);
+        return response()->json(['success' => $success, 'msg' => $msg ]);
     }
 
     public function viewDetails($id)

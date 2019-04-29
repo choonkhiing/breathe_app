@@ -11,7 +11,7 @@
 	<meta content="" name="author" />
 	
 	<!-- ================== BEGIN BASE CSS STYLE ================== -->
-	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css?family=Karla:300,400,600,700" rel="stylesheet" type="text/css">
 	<link href="/assets/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
 	<link href="/assets/plugins/bootstrap/4.1.0/css/bootstrap.min.css" rel="stylesheet" />
 	<link href="/assets/plugins/font-awesome/5.0/css/fontawesome-all.min.css" rel="stylesheet" />

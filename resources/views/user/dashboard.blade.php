@@ -169,7 +169,7 @@
         		success: function(response){
         			if(response.success === false){
         				add = false;
-        				errMessage("#div_alert", "User is not registered in Breathe.");
+        				errMessage("#div_alert", response.msg);
         			} else {
         				$("#div_alert").hide();
         			}

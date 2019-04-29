@@ -1,7 +1,7 @@
 body{
 	background: #eaf1f9;
 	font-family: 'Karla', sans-serif;
-  font-size: 13px;
+    font-size: 13px;
 }
 
 .header{
@@ -123,15 +123,15 @@ body{
         }
 
         .right-content {
-         background: #0c1218;
-         height: 100%;
-     }
+           background: #0c1218;
+           height: 100%;
+       }
 
-     .login.login-with-news-feed, .register.register-with-news-feed {
-         height: 100%;
-     }
+       .login.login-with-news-feed, .register.register-with-news-feed {
+           height: 100%;
+       }
 
-     .login.login-with-news-feed .login-content, .register.register-with-news-feed .register-content {
+       .login.login-with-news-feed .login-content, .register.register-with-news-feed .register-content {
         background: #0c1218;
     }
 
@@ -373,6 +373,7 @@ ul.tagit{
 .member-name{
     font-size: 15px;
     margin-bottom: 0;
+    word-break: break-word;
 }
 
 .member-name span{
