@@ -241,11 +241,11 @@ class UserController extends Controller
 			->whereDate('start_date', '<=', $currDate)
 			->whereDate('due_date', '>=', $currDate)
 			->orderBy('tasks.group_id', 'ASC')
-			->select("tasks.id as task_id", "groups.*", "group_members.*")
+			->select("tasks.id as task_id", "tasks.*", "groups.*", "group_members.*")
 			->get();
 
 			foreach ($groupTasks as $groupTask) {
-				$settings = Setting::where('reminder_time', '<=', Carbon::now()->format('h:i A'))
+				$settings = Setting::where('reminder_time', Carbon::now()->format('h:i A'))
 				->where('task_id', $groupTask->task_id)->get();
 
 				foreach ($settings as $setting) {
