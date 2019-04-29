@@ -81,24 +81,42 @@ class UserController extends Controller
 			->whereDate('due_date', Carbon::today())->count();
 		}
 
-		$tasks = Task::whereDate("due_date", ">=", Carbon::today())
-		->whereDate("start_date", "<=", Carbon::today())
-		->where("status", 0)->get();
 
         //Get tasks count 
 		$individual = collect();
 		$individual->taskCount = Task::where('group_id', 0)
 		->where('status', 0)
+		->where("user_id", Auth::user()->id)
 		->whereDate('start_date', '<=', Carbon::today())
 		->whereDate('due_date', '>=', Carbon::today())->count();
 
         //Check whether got task due on today
 		$individual->taskDue = Task::where('group_id', 0)
 		->where('status', 0)
+		->where("user_id", Auth::user()->id)
 		->whereDate('start_date', '<=', Carbon::today())
 		->whereDate('due_date', Carbon::today())->count();
 
-		$stressLevel = $this->calculateStressLevel($tasks);
+
+		$tasks = Task::whereDate("due_date", ">=", Carbon::today())
+		->whereDate("start_date", "<=", Carbon::today())
+		->where("user_id", Auth::user()->id)
+		->where('tasks.group_id', 0)
+		->where("status", 0)->get();
+
+		$groupTasks = Task::leftJoin("groups", "tasks.group_id", "groups.id")
+			->leftJoin("group_members", "group_members.group_id", "groups.id")
+			->where('group_members.user_id', Auth::user()->id)
+			->where('tasks.group_id', ">", 0)
+			->where('tasks.status', 0)
+			->where('groups.status', 1)
+			->where('group_members.status', 1)
+			->whereDate('start_date', '<=', Carbon::today())
+			->whereDate('due_date', '>=', Carbon::today())
+			->orderBy('tasks.group_id', 'ASC')
+			->get();
+
+		$stressLevel = $this->calculateStressLevel($tasks) + $this->calculateStressLevel($groupTasks);
 
 		return view("user/dashboard", compact("groups", "individual", "stressLevel"));
 	}
@@ -188,34 +206,65 @@ class UserController extends Controller
         //Check user's reminder time.
 		$users = User::all();
 
+		$remindTasks = collect(); 
+
 		foreach ($users as $user) {
-			$settings = Setting::where('reminder_time', '<=', Carbon::now()->format('h:i A'))->get();
 			$currDate = Carbon::today();
-			$remindTasks = collect(); 
 
-			foreach ($settings as $setting) {
-				$tasks = Task::with("group")->where('user_id', $user->id)
-				->where('status', 0)
-				->where('id', $setting->task_id)
-				->whereDate('start_date', '<=', $currDate)
-				->whereDate('due_date', '>=', $currDate)
-				->get();
+			$tasks = Task::with("group")->where('user_id', $user->id)
+			->where('status', 0)
+			->where('group_id', 0)
+			->whereDate('start_date', '<=', $currDate)
+			->whereDate('due_date', '>=', $currDate)
+			->orderBy('group_id', 'ASC')
+			->get();
 
-        	 	//Get the task is closed to duedate
-				foreach ($tasks as $task) {
+			foreach ($tasks as $task) {
+				$settings = Setting::where('reminder_time', Carbon::now()->format('h:i A'))
+				->where('task_id', $task->id)->get();
+
+				foreach ($settings as $setting) {
+        	 		//Get the task is closed to duedate
 					if ($currDate->diffInDays($task->due_date) <= $setting->day_before_remind) {
 						$remindTasks->push($task);
 					}	
-				}
+				} 				
+			}
+
+			$groupTasks = Task::leftJoin("groups", "tasks.group_id", "groups.id")
+			->leftJoin("group_members", "group_members.group_id", "groups.id")
+			->where('group_members.user_id', $user->id)
+			->where('tasks.group_id', ">", 0)
+			->where('tasks.status', 0)
+			->where('groups.status', 1)
+			->where('group_members.status', 1)
+			->whereDate('start_date', '<=', $currDate)
+			->whereDate('due_date', '>=', $currDate)
+			->orderBy('tasks.group_id', 'ASC')
+			->select("tasks.id as task_id", "groups.*", "group_members.*")
+			->get();
+
+			foreach ($groupTasks as $groupTask) {
+				$settings = Setting::where('reminder_time', '<=', Carbon::now()->format('h:i A'))
+				->where('task_id', $groupTask->task_id)->get();
+
+				foreach ($settings as $setting) {
+        	 		//Get the task is closed to duedate
+					if ($currDate->diffInDays($groupTask->due_date) <= $setting->day_before_remind) {
+						$remindTasks->push($groupTask);
+					}	
+				} 				
 			}
 		}
 
 		$remindTasks = $remindTasks->groupBy("user_id");
-
+		
 		if (!$remindTasks->isEmpty()) {
-        	 		//Send email to remind the user
+        	//Send email to remind the user
 			try {
-				foreach ($remindTasks as $remindTask) {
+				foreach ($remindTasks as $key => $remindTask) {
+					$user = User::find($key);
+
 					$beautymail = app()->make(\Snowfire\Beautymail\Beautymail::class);
 					$beautymail->send('emails.reminder', ['user' => $user, 'tasks' => $remindTask], function($message) use ($user)
 					{

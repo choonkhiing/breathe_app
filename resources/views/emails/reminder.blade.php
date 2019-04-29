@@ -28,7 +28,7 @@
 	@endforeach
 </table>
 
-<p style="text-align: center;"><a href="http://localhost:8000" style="padding: 10px 45px;background: #00acac;color: white;font-size: 16px;margin-top: 37px;display: block;    margin-bottom: -35px;">Visit Us</a></p>
+<p style="text-align: center;"><a href="http://breathe.geekycs.com" style="padding: 10px 45px;background: #00acac;color: white;font-size: 16px;margin-top: 37px;display: block;    margin-bottom: -35px;">Visit Us</a></p>
 
 @include('beautymail::templates.sunny.contentEnd')
 @stop
